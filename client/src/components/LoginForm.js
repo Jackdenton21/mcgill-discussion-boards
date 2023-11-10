@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
+import '../styles.css'; // Adjust the path as necessary
+
+
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');

@@ -1,8 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import LoginForm from './LoginForm';
-import RegistrationForm from './RegistrationForm';
-import RegistrationSuccess from './RegistrationSuccess';
+import LoginForm from './components/LoginForm';
+import RegistrationForm from './components/RegistrationForm';
+import RegistrationSuccess from './pages/RegistrationSuccess';
+import './styles.css'; // Adjust the path as necessary
+
 
 function App() {
   return (
@@ -11,11 +13,10 @@ function App() {
         <header className="App-header">
           <Routes>
             <Route path="/" element={
-              <>
-                <p>Welcome to the Login Page!</p>
+              <> 
+                <p>McGill Slack clone!</p>
                 <LoginForm />
-                <hr />
-                <p>Need an account? <Link to="/register">Register here</Link></p>
+                <p>Need an account? <Link to="/register" className="App-link">Register here</Link></p>
               </>
             } />
             <Route path="/register" element={<RegistrationForm />} />
