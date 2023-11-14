@@ -18,12 +18,15 @@ app.use(cors());
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
+
 });
 
+const slackDB = mongoose.connection.useDb('slack0');
 // Passport initialization
 app.use(passport.initialize());
 
@@ -31,9 +34,17 @@ app.use(passport.initialize());
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  Did: {
+    type: Array,
+    default: [],
+  },
+  contacts: {
+    type: Array,
+    default: [],
+  },
 });
 
-const User = mongoose.model('User', userSchema);
+const User = slackDB.model('User', userSchema);
 
 // LocalStrategy for username/password authentication
 passport.use(new LocalStrategy(
@@ -106,3 +117,32 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+
+
+
+/*
+
+
+// New route for discussion board
+app.post('/discussionboard', async (req, res) => {
+  try {
+    // Step 1: Retrieve discussionIDs based on the logged-in user
+    const userDiscussion = await User.findOne({ username: req.user.username });
+    if (!userDiscussion) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const discussionIDs = userDiscussion.discussionIDs || [];
+
+    // Step 2: Retrieve discussionNames based on the retrieved discussionIDs
+    const discussionCollection = await Discussion.find({ discussionID: { $in: discussionIDs } }); //collection will be called discussions
+    const discussionNames = discussionCollection.map(doc => doc.discussionName);
+
+    res.status(200).json({ discussionNames });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+*/
