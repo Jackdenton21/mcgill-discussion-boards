@@ -46,6 +46,19 @@ const userSchema = new mongoose.Schema({
 
 const User = slackDB.model('User', userSchema);
 
+const discussionSchema = new mongoose.Schema({
+  discussionID: Number,
+  usernames: {
+    type: Array,
+    default: [],
+  },
+  discussionName: String,
+});
+
+discussionSchema.index({ discussionID: 1 });
+
+const Discussion = slackDB.model('discussionboards', discussionSchema);
+
 // LocalStrategy for username/password authentication
 passport.use(new LocalStrategy(
   {
@@ -120,29 +133,33 @@ app.listen(port, () => {
 
 
 
-
-/*
-
-
 // New route for discussion board
-app.post('/discussionboard', async (req, res) => {
+app.post('/discussion-board', async (req, res) => {
   try {
     // Step 1: Retrieve discussionIDs based on the logged-in user
-    const userDiscussion = await User.findOne({ username: req.user.username });
+    const userDiscussion = await User.findOne({ username: req.body.username });
+
     if (!userDiscussion) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    const discussionIDs = userDiscussion.discussionIDs || [];
+    const discussionIDs = userDiscussion.Did || [];
+    console.log('discussionIDs:', discussionIDs);
 
     // Step 2: Retrieve discussionNames based on the retrieved discussionIDs
-    const discussionCollection = await Discussion.find({ discussionID: { $in: discussionIDs } }); //collection will be called discussions
+    const discussionCollection = await Discussion.find({ discussionID: { $in: discussionIDs } });
+    console.log('discussionCollection:', discussionCollection);
+
     const discussionNames = discussionCollection.map(doc => doc.discussionName);
+    console.log('discussionNames:', discussionNames);
 
     res.status(200).json({ discussionNames });
   } catch (error) {
-    console.error(error);
+    console.error('Error in /discussion-board:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-*/
+
+
+
+
