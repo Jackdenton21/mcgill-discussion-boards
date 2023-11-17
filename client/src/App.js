@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import LoginForm from './components/LoginForm';
 import RegistrationForm from './components/RegistrationForm';
 import RegistrationSuccess from './pages/RegistrationSuccess';
+import DiscussionBoard from './components/discussionBoard';
+
 import './styles.css'; // Adjust the path as necessary
 
 
@@ -21,6 +23,7 @@ function App() {
             } />
             <Route path="/register" element={<RegistrationForm />} />
             <Route path="/registration-success" element={<RegistrationSuccess />} />
+            <Route path="/discussion-board" element={<DiscussionBoard />} />
           </Routes>
         </header>
       </div>

@@ -18,12 +18,15 @@ app.use(cors());
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
+
 });
 
+const slackDB = mongoose.connection.useDb('slack0');
 // Passport initialization
 app.use(passport.initialize());
 
@@ -31,9 +34,30 @@ app.use(passport.initialize());
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  Did: {
+    type: Array,
+    default: [],
+  },
+  contacts: {
+    type: Array,
+    default: [],
+  },
 });
 
-const User = mongoose.model('User', userSchema);
+const User = slackDB.model('User', userSchema);
+
+const discussionSchema = new mongoose.Schema({
+  discussionID: Number,
+  usernames: {
+    type: Array,
+    default: [],
+  },
+  discussionName: String,
+});
+
+discussionSchema.index({ discussionID: 1 });
+
+const Discussion = slackDB.model('discussionboards', discussionSchema);
 
 // LocalStrategy for username/password authentication
 passport.use(new LocalStrategy(
@@ -106,3 +130,49 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+
+
+// New route for discussion board
+app.post('/discussion-board', async (req, res) => {
+  try {
+    // Step 1: Retrieve discussionIDs based on the logged-in user
+    const userDiscussion = await User.findOne({ username: req.body.username });
+
+    if (!userDiscussion) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const discussionIDs = userDiscussion.Did || [];
+    console.log('discussionIDs:', discussionIDs);
+
+    // Step 2: Retrieve discussionNames based on the retrieved discussionIDs
+    const discussionCollection = await Discussion.find({
+      discussionID: { $in: discussionIDs },
+      usernames: { $not: { $size: 2 } }, // Only return discussions without exactly two usernames (not direct Messages)
+    });
+    
+    const discussionCollectionDM = await Discussion.find({
+      discussionID: { $in: discussionIDs },
+      usernames: { $size: 2 },
+    });
+
+    console.log('discussionCollection:', discussionCollection);
+
+    const discussionNames = discussionCollection.map(doc => doc.discussionName);
+    console.log('discussionNames:', discussionNames);
+
+    const discussionNamesDM = discussionCollectionDM.map(doc => doc.discussionName);
+    console.log('discussionNames:', discussionNamesDM);
+
+    res.status(200).json({ discussionNames,discussionNamesDM });
+  } catch (error) {
+    console.error('Error in /discussion-board:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
+
+

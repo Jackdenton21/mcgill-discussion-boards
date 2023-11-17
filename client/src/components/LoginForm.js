@@ -16,11 +16,11 @@ const LoginForm = () => {
     setError(''); // Clear any existing errors
     try {
       const response = await axios.post('http://localhost:3001/login', { username, password });
-      
+
       if (response.status === 200 && response.data.user && response.data.token) {
         console.log('Login successful:', response.data);
         localStorage.setItem('registeredUsername', username);
-        navigate('/registration-success');
+        navigate('/discussion-board');
       } else {
         setError('Login failed: Invalid username or password');
       }
@@ -29,7 +29,7 @@ const LoginForm = () => {
       setError('Login failed: Invalid username or password');
     }
   };
-  
+
 
   return (
     <form onSubmit={handleLogin}>
