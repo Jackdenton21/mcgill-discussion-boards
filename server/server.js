@@ -147,18 +147,31 @@ app.post('/discussion-board', async (req, res) => {
     console.log('discussionIDs:', discussionIDs);
 
     // Step 2: Retrieve discussionNames based on the retrieved discussionIDs
-    const discussionCollection = await Discussion.find({ discussionID: { $in: discussionIDs } });
+    const discussionCollection = await Discussion.find({
+      discussionID: { $in: discussionIDs },
+      usernames: { $not: { $size: 2 } }, // Only return discussions without exactly two usernames (not direct Messages)
+    });
+    
+    const discussionCollectionDM = await Discussion.find({
+      discussionID: { $in: discussionIDs },
+      usernames: { $size: 2 },
+    });
+
     console.log('discussionCollection:', discussionCollection);
 
     const discussionNames = discussionCollection.map(doc => doc.discussionName);
     console.log('discussionNames:', discussionNames);
 
-    res.status(200).json({ discussionNames });
+    const discussionNamesDM = discussionCollectionDM.map(doc => doc.discussionName);
+    console.log('discussionNames:', discussionNamesDM);
+
+    res.status(200).json({ discussionNames,discussionNamesDM });
   } catch (error) {
     console.error('Error in /discussion-board:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 

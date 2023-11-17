@@ -1,53 +1,61 @@
 .Home {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: rgb(214, 100, 100);
-    font-family: 'Roboto', sans-serif;
-    color: #333;
-  }
-  
-  .Board {
-    margin: 10px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-  
-  .Board:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    transform: translateY(-2px);
-    background-color: #ffdddd; /* Light red background on hover */
-  }
-  
-  .Board a {
-    text-decoration: none;
-    color: #d00; /* Red color for links */
-    font-weight: 500;
-  }
-  
-  .Board a:hover {
-    text-decoration: underline;
-  }
-  
-  .Loading {
-    color: #d00; /* Red color for loading text */
-    font-size: 1.2em;
-    font-weight: 500;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: rgb(214, 100, 100);
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
 
-  .Title {
-    margin: 20px 0;
-    vertical-align: top;
-    color: #d00; /* Red color to match the theme */
-    font-size: 1.5em;
-    font-weight: 500;
-  }
+.BoardList {
+  display: flex;  /* Set display property to flex */
+  list-style: none;
+  padding: 0;
+}
+
+.Board {
+  /* your existing styles */
+  margin: 0px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  text-align: center;
+  transition: all 0.3s ease;
+
+}
+
+.Board:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transform: translateY(-2px);
+  background-color: #ffdddd; /* Light red background on hover */
+}
+
+.Board a {
+  text-decoration: none;
+  color: black; /* Red color for links */
+  font-weight: 500;
+}
+
+.Board a:hover {
+  text-decoration: underline;
+}
+
+.Loading {
+  color: #d00; /* Red color for loading text */
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+.Title {
+  margin: 20px 0;
+  vertical-align: top;
+  color: black; /* Red color to match the theme */
+  font-size: 1.5em;
+  font-weight: 500;
+}
