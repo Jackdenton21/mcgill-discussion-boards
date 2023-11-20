@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of
 //import '../styles.css'; // Adjust the path as necessary
 
 
-
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Use useNavigate hook
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,6 +21,7 @@ const LoginForm = () => {
         console.log('Login successful:', response.data);
         localStorage.setItem('registeredUsername', username);
         navigate('/discussion-board');
+
       } else {
         setError('Login failed: Invalid username or password');
       }

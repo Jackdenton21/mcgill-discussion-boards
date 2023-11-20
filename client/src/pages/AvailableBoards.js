@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/AvailableBoard.css';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header'; // Import the Header component
+
 
 function DiscussionBoard() {
   const [username, setUsername] = useState('');
@@ -41,6 +43,7 @@ function DiscussionBoard() {
 
   return (
     <div className="Home">
+            <Header />
       {/* Discussion Boards */}
       {boards.length > 0 ? (
         <div>

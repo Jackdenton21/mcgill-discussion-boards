@@ -1,0 +1,83 @@
+/* Reset default margin and padding */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%; /* Ensure the body takes full width */
+  height: 100%; /* Full height */
+}
+
+.AppHeader {
+  width: 100%; /* Full width */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align items to the start */
+  background-color: rgb(223, 74, 74); /* Example background color */
+  color: white; /* Text color */
+  padding: 10px 20px; /* Adjust padding as needed */
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  position: fixed; /* Fixed position */
+  top: 0; /* Top of the page */
+  left: 0; /* Left align */
+  z-index: 1000; /* Ensure it's above other elements */
+}
+
+.AppHeader h1, .AppHeader h2 {
+  margin: 0; /* Remove default margins */
+  font-size: 16px; /* Adjust font size */
+  font-weight: bold; /* Bold for h1 */
+  color: white;
+}
+
+.AppHeader h2 {
+  margin-left: 15px; /* Space between h1 and h2 */
+  font-weight: normal; /* Normal weight for h2 */
+}
+
+.HeaderUsername {
+  position: absolute; /* Absolute positioning */
+  top: 50%; 
+  right: 20px; 
+  transform: translateY(-50%); 
+}
+
+/* ... existing styles ... */
+
+.HeaderUsername {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.DropdownContent {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px); /* Positioned just below the username */
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  z-index: 100;
+  display: none; /* Hide by default */
+}
+
+.HeaderUsername:hover .DropdownContent {
+  display: block; /* Show the dropdown on hover */
+}
+
+.DropdownContent button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background-color: #1b7aa9;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.DropdownContent button:hover {
+  background-color: #e0e0e0;
+}
+
