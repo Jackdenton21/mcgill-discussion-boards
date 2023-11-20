@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header'; // Import the Header component
 
 
+
 function DiscussionBoard() {
   const [username, setUsername] = useState('');
   const [boards, setBoards] = useState([]);
