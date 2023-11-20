@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
-import '../styles.css'; // Adjust the path as necessary
+//import '../styles.css'; // Adjust the path as necessary
 
 
 
