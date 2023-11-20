@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
 import '../styles/Login.css'; // Import the CSS file
-
+import ROUTE from '../globals';
 
 
 const RegistrationForm = () => {
@@ -18,7 +18,7 @@ const RegistrationForm = () => {
     e.preventDefault();
     setError(''); // Clear any existing errors
     try {
-      const response = await axios.post('http://localhost:3001/register', { username, password, email });
+      const response = await axios.post(ROUTE+'/register', { username, password, email });
       // Check if response.data exists before accessing properties
       if (response.data) {
         console.log('Registration successful:', response.data);

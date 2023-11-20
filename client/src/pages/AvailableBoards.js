@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../styles/AvailableBoard.css';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header'; // Import the Header component
-
+import ROUTE from '../globals';
 
 function DiscussionBoard() {
   const [username, setUsername] = useState('');
@@ -23,7 +23,7 @@ function DiscussionBoard() {
       try {
         const storedUsername = localStorage.getItem('registeredUsername');
         setUsername(storedUsername || 'User');
-        const response = await axios.post(`http://localhost:3001/discussion-board`, { username: storedUsername });
+        const response = await axios.post(ROUTE+`/discussion-board`, { username: storedUsername });
         setBoards(response.data.discussionNames || []); // Expecting an array of board names for groups
         setBoardsDM(response.data.discussionNamesDM || []); // Expecting an array of board names for direct messages
       } catch (error) {
