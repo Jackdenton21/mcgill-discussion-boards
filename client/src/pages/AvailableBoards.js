@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/AvailableBoard.css';
+import { useNavigate } from 'react-router-dom';
 
 function DiscussionBoard() {
   const [username, setUsername] = useState('');
   const [boards, setBoards] = useState([]);
   const [boardsDM, setBoardsDM] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  const handleBoardClick = (boardId) => {
+    navigate(`/board/${boardId}`);
+  }
 
   useEffect(() => {
     const fetchBoards = async () => {
@@ -40,7 +47,7 @@ function DiscussionBoard() {
           <h2 className="Subtitle">Group Discussions</h2>
           <ul className="BoardList">
             {boards.map((board, index) => (
-              <li key={index} className="Board">
+              <li key={index} className="Board" onClick={() => handleBoardClick(board)}>
                 {board}
               </li>
             ))}
@@ -59,7 +66,7 @@ function DiscussionBoard() {
           <h2 className="Subtitle">Direct Messages</h2>
           <ul className="BoardList">
             {boardsDM.map((board, index) => (
-              <li key={index} className="Board">
+              <li key={index} className="Board" onClick={() => handleBoardClick(board)}>
                 {board}
               </li>
             ))}
