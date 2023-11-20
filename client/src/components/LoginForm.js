@@ -19,6 +19,7 @@ const LoginForm = () => {
 
       if (response.status === 200 && response.data.user && response.data.token) {
         console.log('Login successful:', response.data);
+        localStorage.setItem('jwt', response.data.token);
         localStorage.setItem('registeredUsername', username);
         navigate('/discussion-board');
 

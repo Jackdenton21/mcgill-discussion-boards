@@ -1,3 +1,36 @@
-h1{
-    color: black;
+.board-container {
+    /* Styles for the board container */
+  }
+  
+  .message-list {
+    /* Styles for the message list */
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .message-form {
+    /* Styles for the message form */
+    display: flex;
+    margin-top: 10px;
+  }
+  
+  .message-input {
+    /* Styles for the message input field */
+    flex-grow: 1;
+    padding: 10px;
+  }
+  
+  .send-message-button {
+    /* Styles for the send message button */
+    padding: 10px 20px;
+  }
+
+form {
+    max-width: 80%;
+    margin: auto
 }
+
+h1{
+    color:black;
+}
+  
