@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './discussionBoard.css';
+import '../styles/AvailableBoard.css';
 
 function DiscussionBoard() {
   const [username, setUsername] = useState('');

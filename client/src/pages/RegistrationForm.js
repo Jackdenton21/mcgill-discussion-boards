@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
+import '../styles/Login.css'; // Import the CSS file
 
 
 
@@ -32,6 +33,9 @@ const RegistrationForm = () => {
   };
 
   return (
+    <div className="register-container">
+    <h1>McGill Slack clone!</h1>
+
     <form onSubmit={handleRegistration}>
       <label>
         Username:
@@ -45,6 +49,7 @@ const RegistrationForm = () => {
       {error && <p className="error">{error}</p>}
 
     </form>
+    </div>
   );
 };
 
