@@ -34,8 +34,13 @@ function Popup({ onClose, onContactAdded, onBoardAdded }) {
             });
 
             if (response.status === 203 || response.status === 200) {
-                const newBoardId = response.data.newBoardId;
-                onBoardAdded(newBoardId);
+                const newBoardId = response.data.boardId;
+                const newBoardName = response.data.boardName;
+                console.log(response.data)
+                console.log("HERE")
+                console.log(newBoardName)
+                console.log(newBoardId)
+                onBoardAdded(newBoardName,newBoardId);
             }
 
         } catch (error) {

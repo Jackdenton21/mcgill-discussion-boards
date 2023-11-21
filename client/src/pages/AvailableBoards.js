@@ -22,21 +22,20 @@ function DiscussionBoard() {
     navigate(`/board/${boardName}`, { state: { boardName, boardId } });
   };
 
+  const fetchBoards = async () => {
+    setIsLoading(true);
+    try {
+      const storedUsername = localStorage.getItem('registeredUsername');
+      setUsername(storedUsername || 'User');
+      const response = await axios.post(`http://localhost:3001/discussion-board`, { username: storedUsername });
+      setBoards(response.data.discussions || []); // Expecting an array of board names for groups
+      setBoardsDM(response.data.discussionsDM || []); // Expecting an array of board names for direct messages
+    } catch (error) {
+      console.error('Error fetching boards:', error);
+    }
+    setIsLoading(false);
+  };
 
-  useEffect(() => {
-    const fetchBoards = async () => {
-      setIsLoading(true);
-      try {
-        const storedUsername = localStorage.getItem('registeredUsername');
-        setUsername(storedUsername || 'User');
-        const response = await axios.post(`http://localhost:3001/discussion-board`, { username: storedUsername });
-        setBoards(response.data.discussions || []); // Expecting an array of board names for groups
-        setBoardsDM(response.data.discussionsDM || []); // Expecting an array of board names for direct messages
-      } catch (error) {
-        console.error('Error fetching boards:', error);
-      }
-      setIsLoading(false);
-    };
 
   useEffect(() => {
     fetchBoards();
@@ -52,10 +51,11 @@ function DiscussionBoard() {
     console.log('closing');
   };
 
-  const onBoardAdded = (newBoardId) => {
-    fetchBoards();
-    navigate(`/board/${newBoardId}`); // Use backticks and ${} for template literals
-};
+  const onBoardAdded = (boardName, boardId) => {
+    // Navigate with both name and ID
+    fetchBoards()
+    navigate(`/board/${boardName}`, { state: { boardName, boardId } });
+  };
 
 
     // Handle addition of a message
@@ -139,5 +139,6 @@ function DiscussionBoard() {
         
   );
 }
+
 
 export default DiscussionBoard;

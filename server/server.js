@@ -214,13 +214,12 @@ app.post('/start-discussion-username', async (req, res) => {
 
       // Check if a discussion between the two users already exists
       const existingDiscussion = await Discussion.findOne({
-          usernames: { $all: [currentUser, newUsername] }
+          usernames: { $all: [currentUser, newUsername], $size: 2}
       });
 
       if (existingDiscussion) {
           // Return existing discussion ID if it exists
-
-          return res.status(203).json({ newBoardID: existingDiscussion.discussionID });
+          return res.status(203).json({ boardName: existingDiscussion.discussionName,boardId:existingDiscussion._id });
       }
 
       // If no existing discussion, create a new one
@@ -233,15 +232,14 @@ app.post('/start-discussion-username', async (req, res) => {
           discussionName: newUsername, // or currentUser, based on preference
       });
 
-      await newDiscussion.save();
+      const savedDiscussion = await newDiscussion.save();
 
       // Update both users' Did arrays
       currentUserObj.Did.push(newDiscussionID);
       newUserObj.Did.push(newDiscussionID);
       await currentUserObj.save();
       await newUserObj.save();
-
-      res.status(203).json({ newBoardID: newDiscussion.discussionID });
+      res.status(203).json({ boardName: savedDiscussion.discussionName,boardId:savedDiscussion._id });
   } catch (error) {
       console.error('Error in creating new discussion:', error);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -263,6 +261,7 @@ app.post('/find-user-by-email', async (req, res) => {
       console.error('Error in /find-user-by-email:', error);
       res.status(500).json({ error: 'Internal Server Error' });
   }
+});
 
 
 
