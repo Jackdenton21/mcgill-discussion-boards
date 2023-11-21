@@ -13,9 +13,10 @@ function DiscussionBoard() {
 
   const navigate = useNavigate();
 
-  const handleBoardClick = (boardId) => {
-    navigate(`/board/${boardId}`);
-  }
+  const handleBoardClick = (boardName, boardId) => {
+    // Navigate with both name and ID
+    navigate(`/board/${boardName}`, { state: { boardName, boardId } });
+  };
 
   useEffect(() => {
     const fetchBoards = async () => {
@@ -24,8 +25,8 @@ function DiscussionBoard() {
         const storedUsername = localStorage.getItem('registeredUsername');
         setUsername(storedUsername || 'User');
         const response = await axios.post(`http://localhost:3001/discussion-board`, { username: storedUsername });
-        setBoards(response.data.discussionNames || []); // Expecting an array of board names for groups
-        setBoardsDM(response.data.discussionNamesDM || []); // Expecting an array of board names for direct messages
+        setBoards(response.data.discussions || []); // Expecting an array of board names for groups
+        setBoardsDM(response.data.discussionsDM || []); // Expecting an array of board names for direct messages
       } catch (error) {
         console.error('Error fetching boards:', error);
       }
@@ -50,9 +51,9 @@ function DiscussionBoard() {
           <h2 className="Subtitle">Group Discussions</h2>
           <ul className="BoardList">
             {boards.map((board, index) => (
-              <li key={index} className="Board" onClick={() => handleBoardClick(board)}>
-                {board}
-              </li>
+              <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
+              {board.name}
+            </li>
             ))}
           </ul>
         </div>
@@ -69,9 +70,9 @@ function DiscussionBoard() {
           <h2 className="Subtitle">Direct Messages</h2>
           <ul className="BoardList">
             {boardsDM.map((board, index) => (
-              <li key={index} className="Board" onClick={() => handleBoardClick(board)}>
-                {board}
-              </li>
+              <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
+              {board.name}
+            </li>
             ))}
           </ul>
         </div>

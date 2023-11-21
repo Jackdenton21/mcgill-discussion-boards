@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import "../styles/Board.css";
 import axios from 'axios';
 
 function Board() {
-  const { boardId } = useParams();
+  const location = useLocation();
+  const boardName = location.state?.boardName || 'Default Board Name';
+  const boardId = location.state?.boardId || 'Default Board ID';
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -60,7 +62,7 @@ function Board() {
 
   return (
     <div className="board-container">
-      <h1>{boardId}</h1>
+      <h1>{boardName}</h1>
       <div className="message-list">
         {messages.map((msg, index) => (
           <p key={index}><strong>{msg.sender}</strong>: {msg.message}</p>
