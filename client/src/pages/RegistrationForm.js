@@ -4,16 +4,13 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of
 import '../styles/Login.css'; // Import the CSS file
 import { ROUTE } from '../constants';
 
-
 const RegistrationForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Use useNavigate hook
-
-
-
+  
   const handleRegistration = async (e) => {
     e.preventDefault();
     setError(''); // Clear any existing errors

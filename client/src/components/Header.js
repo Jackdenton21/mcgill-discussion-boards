@@ -1,7 +1,7 @@
 // Header.js
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Header.css';
-import ContactPopup from './ContactPopup'; // Import the ContactPopup component
+//import ContactPopup from './ContactPopup'; // Import the ContactPopup component
 import { useNavigate } from 'react-router-dom';
 
 function Header({ onContactAdded }) {
@@ -64,13 +64,7 @@ function Header({ onContactAdded }) {
         )}
       </div>
 
-      {/* Contact Popup */}
-      {isContactPopupOpen && (
-        <ContactPopup
-          onClose={() => setIsContactPopupOpen(false)}
-          onContactAdded={onContactAdded}
-        />
-      )}
+
     </header>
   );
 }

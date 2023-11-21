@@ -200,6 +200,71 @@ app.get('/messages/:discussionID', async (req, res) => {
   }
 });
 
+app.post('/start-discussion-username', async (req, res) => {
+  const { currentUser, newUsername } = req.body;
+
+  try {
+      // Ensure both users exist
+      const currentUserObj = await User.findOne({ username: currentUser });
+      const newUserObj = await User.findOne({ username: newUsername });
+
+      if (!currentUserObj || !newUserObj) {
+          return res.status(404).json({ error: 'One or more usernames not found.' });
+      }
+
+      // Check if a discussion between the two users already exists
+      const existingDiscussion = await Discussion.findOne({
+          usernames: { $all: [currentUser, newUsername], $size: 2}
+      });
+
+      if (existingDiscussion) {
+          // Return existing discussion ID if it exists
+          return res.status(203).json({ boardName: existingDiscussion.discussionName,boardId:existingDiscussion._id });
+      }
+
+      // If no existing discussion, create a new one
+      const discussionCount = await Discussion.countDocuments();
+      const newDiscussionID = discussionCount + 1;
+
+      const newDiscussion = new Discussion({
+          discussionID: newDiscussionID,
+          usernames: [currentUser, newUsername],
+          discussionName: newUsername, // or currentUser, based on preference
+      });
+
+      const savedDiscussion = await newDiscussion.save();
+
+      // Update both users' Did arrays
+      currentUserObj.Did.push(newDiscussionID);
+      newUserObj.Did.push(newDiscussionID);
+      await currentUserObj.save();
+      await newUserObj.save();
+      res.status(203).json({ boardName: savedDiscussion.discussionName,boardId:savedDiscussion._id });
+  } catch (error) {
+      console.error('Error in creating new discussion:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to find a user by email and return the username
+app.post('/find-user-by-email', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+      const user = await User.findOne({ email: email });
+      if (!user) {
+          return res.status(404).json({ error: 'Email not found.' });
+      }
+      res.status(200).json({ username: user.username });
+      
+  } catch (error) {
+      console.error('Error in /find-user-by-email:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
 // Socket.IO setup
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -233,6 +298,7 @@ io.on('connection', (socket) => {
       console.error('Error saving message:', error);
     }
   });
+
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
