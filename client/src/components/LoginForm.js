@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of
 
 
 const LoginForm = () => {
-  const [username, setUsername] = useState('');
+  const [userOrEmail, setUserOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Use useNavigate hook
@@ -15,12 +15,13 @@ const LoginForm = () => {
     e.preventDefault();
     setError(''); // Clear any existing errors
     try {
-      const response = await axios.post('http://localhost:3001/login', { username, password });
+      const response = await axios.post('http://localhost:3001/login', { userOrEmail, password });
 
       if (response.status === 200 && response.data.user && response.data.token) {
         console.log('Login successful:', response.data);
         localStorage.setItem('jwt', response.data.token);
-        localStorage.setItem('registeredUsername', username);
+        localStorage.setItem('registeredUsername', response.data.user.username);
+
         navigate('/discussion-board');
 
       } else {
@@ -36,8 +37,8 @@ const LoginForm = () => {
   return (
     <form onSubmit={handleLogin}>
       <label>
-        Username:
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+        Username or Email:
+        <input type="text" value={userOrEmail} onChange={(e) => setUserOrEmail(e.target.value)} />
       </label>
       <label>
         Password:

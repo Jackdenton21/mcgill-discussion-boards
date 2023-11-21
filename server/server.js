@@ -41,6 +41,7 @@ app.use(passport.initialize());
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  email: String,
   Did: {
     type: Array,
     default: [],
@@ -71,15 +72,16 @@ const Discussion = slackDB.model('discussionboards', discussionSchema);
 // LocalStrategy for username/password authentication
 passport.use(new LocalStrategy(
   {
-    usernameField: 'username',
+    usernameField: 'userOrEmail',  // Match the name used in your login form
     passwordField: 'password',
   },
-  async (username, password, done) => {
+  async (userOrEmail, password, done) => {
     try {
-      const user = await User.findOne({ username });
+      // Check both username and email fields
+      const user = await User.findOne({ $or: [{ username: userOrEmail }, { email: userOrEmail }] });
 
       if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect username or email.' });
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
@@ -95,18 +97,24 @@ passport.use(new LocalStrategy(
   }
 ));
 
+
 // Registration route using mongoose
 app.post('/register', async (req, res) => {
   try {
     const existingUser = await User.findOne({ username: req.body.username });
+    const existingEmail = await User.findOne({ email: req.body.email });
 
     if (existingUser) {
       return res.status(400).json({ error: 'Username already exists.' });
+    }
+    if (existingEmail) {
+      return res.status(400).json({ error: 'Email already exists.' });
     }
 
     const newUser = new User({
       username: req.body.username,
       password: await bcrypt.hash(req.body.password, 10),
+      email: req.body.email,
     });
 
     await newUser.save();
@@ -117,6 +125,7 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 // Login route using local strategy
 app.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
@@ -154,7 +163,7 @@ app.post('/discussion-board', async (req, res) => {
       discussionID: { $in: discussionIDs },
       usernames: { $not: { $size: 2 } }, // Only return discussions without exactly two usernames (not direct Messages)
     });
-    
+
     const discussionCollectionDM = await Discussion.find({
       discussionID: { $in: discussionIDs },
       usernames: { $size: 2 },
@@ -173,6 +182,7 @@ app.post('/discussion-board', async (req, res) => {
     console.log('discussions:', discussionsDM);
 
     res.status(200).json({ discussions,discussionsDM });
+
   } catch (error) {
     console.error('Error in /discussion-board:', error);
     res.status(500).json({ error: 'Internal Server Error' });
