@@ -6,6 +6,7 @@ import Header from '../components/Header'; // Import the Header component
 //import ContactPopup from '../components/Popup';
 import Popup from '../components/Popup';
 
+import { ROUTE } from '../constants';
 
 function DiscussionBoard() {
   const [username, setUsername] = useState('');
@@ -16,23 +17,26 @@ function DiscussionBoard() {
 
   const navigate = useNavigate();
 
-  const handleBoardClick = (boardId) => {
-    navigate(`/board/${boardId}`);
-  }
-
-  const fetchBoards = async () => {
-    setIsLoading(true);
-    try {
-      const storedUsername = localStorage.getItem('registeredUsername');
-      setUsername(storedUsername || 'User');
-      const response = await axios.post(`http://localhost:3001/discussion-board`, { username: storedUsername });
-      setBoards(response.data.discussionNames || []);
-      setBoardsDM(response.data.discussionNamesDM || []);
-    } catch (error) {
-      console.error('Error fetching boards:', error);
-    }
-    setIsLoading(false);
+  const handleBoardClick = (boardName, boardId) => {
+    // Navigate with both name and ID
+    navigate(`/board/${boardName}`, { state: { boardName, boardId } });
   };
+
+
+  useEffect(() => {
+    const fetchBoards = async () => {
+      setIsLoading(true);
+      try {
+        const storedUsername = localStorage.getItem('registeredUsername');
+        setUsername(storedUsername || 'User');
+        const response = await axios.post(`http://localhost:3001/discussion-board`, { username: storedUsername });
+        setBoards(response.data.discussions || []); // Expecting an array of board names for groups
+        setBoardsDM(response.data.discussionsDM || []); // Expecting an array of board names for direct messages
+      } catch (error) {
+        console.error('Error fetching boards:', error);
+      }
+      setIsLoading(false);
+    };
 
   useEffect(() => {
     fetchBoards();
@@ -84,9 +88,9 @@ function DiscussionBoard() {
           
           <ul className="BoardList">
             {boards.map((board, index) => (
-              <li key={index} className="Board" onClick={() => handleBoardClick(board)}>
-                {board}
-              </li>
+              <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
+              {board.name}
+            </li>
             ))}
           </ul>
         </div>
@@ -111,9 +115,9 @@ function DiscussionBoard() {
 
           <ul className="BoardList">
             {boardsDM.map((board, index) => (
-              <li key={index} className="DirectBoard" onClick={() => handleBoardClick(board)}>
-                {board}
-              </li>
+              <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
+              {board.name}
+            </li>
             ))}
           </ul>
         </div>
@@ -135,4 +139,5 @@ function DiscussionBoard() {
         
   );
 }
+
 export default DiscussionBoard;

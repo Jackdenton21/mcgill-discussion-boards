@@ -1,5 +1,3 @@
-// server.js
-
 const express = require('express');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -7,6 +5,9 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const http = require('http');
+const socketIo = require('socket.io');
+const socketIoJwt = require('socketio-jwt'); // Ensure this package is installed
 require('dotenv').config();
 
 const app = express();
@@ -14,7 +15,14 @@ const port = 3001;
 
 // Middleware for parsing JSON in requests
 app.use(express.json());
-app.use(cors());
+
+const corsOptions = {
+  origin: 'http://localhost:3000', // or '*' to allow all origins
+  credentials: true, // to allow cookies (if using)
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE']
+};
+
+app.use(cors(corsOptions));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -23,14 +31,13 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
-
 });
 
 const slackDB = mongoose.connection.useDb('slack0');
 // Passport initialization
 app.use(passport.initialize());
 
-// Define a User schema using mongoose
+// Define schemas
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
@@ -44,20 +51,22 @@ const userSchema = new mongoose.Schema({
     default: [],
   },
 });
-
 const User = slackDB.model('User', userSchema);
+
+const chatMessageSchema = new mongoose.Schema({
+  discussionID: String,
+  sender: String,
+  message: String,
+  timestamp: { type: Date, default: Date.now }
+});
+const ChatMessage = slackDB.model('ChatMessage', chatMessageSchema);
 
 const discussionSchema = new mongoose.Schema({
   discussionID: Number,
-  usernames: {
-    type: Array,
-    default: [],
-  },
+  usernames: Array,
   discussionName: String,
 });
-
 discussionSchema.index({ discussionID: 1 });
-
 const Discussion = slackDB.model('discussionboards', discussionSchema);
 
 // LocalStrategy for username/password authentication
@@ -135,12 +144,6 @@ app.get('/', (req, res) => {
   res.send('Hello, Node.js server!');
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-
 
 // New route for discussion board
 app.post('/discussion-board', async (req, res) => {
@@ -168,19 +171,34 @@ app.post('/discussion-board', async (req, res) => {
 
     console.log('discussionCollection:', discussionCollection);
 
-    const discussionNames = discussionCollection.map(doc => doc.discussionName);
-    console.log('discussionNames:', discussionNames);
+    const discussions = discussionCollection.map(doc => {
+      return { name: doc.discussionName, id: doc._id };
+    });    
+    console.log('discussions:', discussions);
 
-    const discussionNamesDM = discussionCollectionDM.map(doc => doc.discussionName);
-    console.log('discussionNames:', discussionNamesDM);
+    const discussionsDM = discussionCollectionDM.map(doc => {
+      return { name: doc.discussionName, id: doc._id };
+    });    
+    console.log('discussions:', discussionsDM);
 
-    res.status(200).json({ discussionNames, discussionNamesDM });
+    res.status(200).json({ discussions,discussionsDM });
+
   } catch (error) {
     console.error('Error in /discussion-board:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
+// Endpoint to get messages for a discussion
+app.get('/messages/:discussionID', async (req, res) => {
+  try {
+    const messages = await ChatMessage.find({ discussionID: req.params.discussionID });
+    res.json(messages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
 
 app.post('/start-discussion-username', async (req, res) => {
   const { currentUser, newUsername } = req.body;
@@ -230,10 +248,6 @@ app.post('/start-discussion-username', async (req, res) => {
   }
 });
 
-
-
-
-
 // Route to find a user by email and return the username
 app.post('/find-user-by-email', async (req, res) => {
   const { email } = req.body;
@@ -249,4 +263,50 @@ app.post('/find-user-by-email', async (req, res) => {
       console.error('Error in /find-user-by-email:', error);
       res.status(500).json({ error: 'Internal Server Error' });
   }
+
+
+
+// Socket.IO setup
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+    credentials: true
+  }
+});
+
+// Authenticate Socket.IO connections
+io.use(socketIoJwt.authorize({
+  secret: process.env.JWT_SECRET || 'your-secret-key',
+  handshake: true
+}));
+
+io.on('connection', (socket) => {
+  console.log('Authenticated client connected');
+
+  socket.on('joinDiscussion', ({ discussionID }) => {
+    socket.join(discussionID);
+    console.log(`Joined discussion ${discussionID}`);
+  });
+
+  socket.on('sendMessage', async ({ discussionID, sender, message }) => {
+    try {
+      const newMessage = new ChatMessage({ discussionID, sender, message });
+      const savedMessage = await newMessage.save();
+      io.to(discussionID).emit('message', savedMessage);
+    } catch (error) {
+      console.error('Error saving message:', error);
+    }
+  });
+
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+// Start the HTTP server instead of the Express app
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
