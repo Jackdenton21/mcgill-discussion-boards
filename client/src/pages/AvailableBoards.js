@@ -67,6 +67,10 @@ function DiscussionBoard() {
   return (
     <div className="Home">
             <Header />
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
       {/* Discussion Boards */}
       {boards.length > 0 ? (
         <div>
