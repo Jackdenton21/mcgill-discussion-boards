@@ -162,13 +162,17 @@ app.post('/discussion-board', async (req, res) => {
 
     console.log('discussionCollection:', discussionCollection);
 
-    const discussionNames = discussionCollection.map(doc => doc.discussionName);
-    console.log('discussionNames:', discussionNames);
+    const discussions = discussionCollection.map(doc => {
+      return { name: doc.discussionName, id: doc._id };
+    });    
+    console.log('discussions:', discussions);
 
-    const discussionNamesDM = discussionCollectionDM.map(doc => doc.discussionName);
-    console.log('discussionNames:', discussionNamesDM);
+    const discussionsDM = discussionCollectionDM.map(doc => {
+      return { name: doc.discussionName, id: doc._id };
+    });    
+    console.log('discussions:', discussionsDM);
 
-    res.status(200).json({ discussionNames,discussionNamesDM });
+    res.status(200).json({ discussions,discussionsDM });
   } catch (error) {
     console.error('Error in /discussion-board:', error);
     res.status(500).json({ error: 'Internal Server Error' });
