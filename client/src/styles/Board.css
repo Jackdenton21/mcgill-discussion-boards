@@ -1,11 +1,14 @@
 .board-container {
-    /* Styles for the board container */
+  margin-top: 60px;
   }
   
   .message-list {
     /* Styles for the message list */
+    margin-left: 60px;
     max-height: 400px;
     overflow-y: auto;
+    text-align: left;
+
   }
   
   .message-form {
@@ -26,7 +29,6 @@
   }
 
 form {
-    max-width: 80%;
     margin: auto
 }
 

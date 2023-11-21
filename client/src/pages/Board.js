@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { useParams, useLocation } from 'react-router-dom';
 import "../styles/Board.css";
 import axios from 'axios';
+import Header from '../components/Header';
 
 function Board() {
   const location = useLocation();
@@ -12,6 +13,20 @@ function Board() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [username, setUsername] = useState('');
+
+  const messageListRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messageListRef.current?.scrollTo({
+      top: messageListRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+  
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]); 
 
   useEffect(() => {
 
@@ -61,9 +76,11 @@ function Board() {
   };
 
   return (
+    <div>
+      <Header />
     <div className="board-container">
       <h1>{boardName}</h1>
-      <div className="message-list">
+      <div className="message-list" ref={messageListRef}>
         {messages.map((msg, index) => (
           <p key={index}><strong>{msg.sender}</strong>: {msg.message}</p>
         ))}
@@ -79,6 +96,8 @@ function Board() {
         <button type="submit" className="send-message-button">Send</button>
       </form>
     </div>
+    </div>
+
   );
 }
 
