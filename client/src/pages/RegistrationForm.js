@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
 import '../styles/Login.css'; // Import the CSS file
-import ROUTE from '../globals';
+import { ROUTE } from '../constants';
 
 
 const RegistrationForm = () => {
