@@ -26,6 +26,23 @@
   justify-content: center; /* Center content horizontally in flex container */
 }
 
+.DirectBoard {
+  width: 120px; /* Diameter of the button */
+  height: 120px; /* Diameter of the button */
+  border-radius: 50%; /* Makes it round */
+  font-size: 15px; /* Size of the plus symbol */
+  text-align: center; /* Horizontally centers the '+' symbol */
+  color: #fff; /* Color of the '+' symbol (white) */
+  background-color: rgb(173, 115, 115); /* Background color of the button (red) */
+  cursor: pointer; /* Cursor changes to pointer when hovering over the button */
+  line-height: 50px; /* Aligns the '+' vertically */
+  border: none; /* Optional: remove border */
+  display: flex; /* Use flexbox to center the content */
+  align-items: center; /* Center content vertically in flex container */
+  justify-content: center; /* Center content horizontally in flex container */
+  text-decoration: bold;
+}
+
 /* Optional: Add a hover effect */
 .round-button:hover {
   background-color: #cc0000; /* Darker shade of red on hover */
@@ -83,6 +100,8 @@
 .Board a:hover {
   text-decoration: underline;
 }
+
+
 
 .Loading {
   position: fixed;

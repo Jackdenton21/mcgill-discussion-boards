@@ -33,15 +33,14 @@ function Popup({ onClose, onContactAdded, onBoardAdded }) {
                 newUsername: newUsername,
             });
 
-            if (response.status === 203) {
-                onBoardAdded(); // Call the callback function
-                onClose();
+            if (response.status === 203 || response.status === 200) {
+                const newBoardId = response.data.newBoardId;
+                onBoardAdded(newBoardId);
             }
 
-            //onClose(); // Close the pop-up
         } catch (error) {
-            console.error('Error:', error);
-            setErrorMessage(error.response.data.error || 'Error');
+            console.error('Failed to Start Direct Message:', error);
+            setErrorMessage(error.response.data.error || 'Failed to Start Direct Message:');
         }
     };
 
@@ -64,6 +63,7 @@ function Popup({ onClose, onContactAdded, onBoardAdded }) {
 }
 
 export default Popup;
+
 
 
 

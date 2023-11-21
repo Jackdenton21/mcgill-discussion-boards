@@ -48,10 +48,11 @@ function DiscussionBoard() {
     console.log('closing');
   };
 
-  const onBoardAdded = (newBoardID) => {
+  const onBoardAdded = (newBoardId) => {
     fetchBoards();
-    navigate('/board/${newBoardId}');
-  }
+    navigate(`/board/${newBoardId}`); // Use backticks and ${} for template literals
+};
+
 
     // Handle addition of a message
     const handleMessageAdded = (updatedContacts) => {
@@ -106,7 +107,7 @@ function DiscussionBoard() {
 
           <ul className="BoardList">
             {boardsDM.map((board, index) => (
-              <li key={index} className="Board" onClick={() => handleBoardClick(board)}>
+              <li key={index} className="DirectBoard" onClick={() => handleBoardClick(board)}>
                 {board}
               </li>
             ))}
