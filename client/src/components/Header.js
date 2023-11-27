@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Header.css';
 //import ContactPopup from './ContactPopup'; // Import the ContactPopup component
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext'; // Import useAuth
+
 
 function Header({ onContactAdded }) {
   const navigate = useNavigate();
@@ -10,6 +12,8 @@ function Header({ onContactAdded }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isContactPopupOpen, setIsContactPopupOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { logout } = useAuth(); // Use the logout function from context
+
 
   useEffect(() => {
     // Retrieve the username from localStorage
@@ -42,10 +46,8 @@ function Header({ onContactAdded }) {
     // Logout logic here
     
     console.log('Logging out...');
+    logout(); // Call logout from context
     navigate('/');
-    localStorage.removeItem('registeredUsername');
-    // Clear localStorage or handle logout logic
-    // Redirect to login page or update state as needed
   };
 
   return (

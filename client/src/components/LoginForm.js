@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
 //import '../styles.css'; // Adjust the path as necessary
+import { useAuth } from '../AuthContext'; // Import useAuth
+
 
 
 const LoginForm = () => {
@@ -9,6 +11,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Use useNavigate hook
+  const { login } = useAuth(); // Use the login function from context
 
 
   const handleLogin = async (e) => {
@@ -19,9 +22,7 @@ const LoginForm = () => {
 
       if (response.status === 200 && response.data.user && response.data.token) {
         console.log('Login successful:', response.data);
-        localStorage.setItem('jwt', response.data.token);
-        localStorage.setItem('registeredUsername', response.data.user.username);
-
+        login(response.data.token, response.data.user.username); 
         navigate('/discussion-board');
 
       } else {
