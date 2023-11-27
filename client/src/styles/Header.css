@@ -19,6 +19,7 @@ html, body {
   top: 0; /* Top of the page */
   left: 0; /* Left align */
   z-index: 1000; /* Ensure it's above other elements */
+  height: 80px;
 }
 
 .AppHeader h1, .AppHeader h2 {
