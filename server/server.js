@@ -267,7 +267,7 @@ app.post('/find-user-by-email', async (req, res) => {
 
 app.post('/start-discussion', async (req, res) => {
   const { discussionName, code, username } = req.body;
-  //console.log('Received data:', { discussionName, code, username });
+  console.log('Received data:', { discussionName, code, username });
 
   try {
     const discussionCount = await Discussion.countDocuments();

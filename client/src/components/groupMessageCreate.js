@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ROUTE } from '../globals'
 
 function GroupMessageCreate({ onClose, onBoardAdded, username }) {
   const [createDiscussion, setCreateDiscussion] = useState(true);
@@ -14,7 +15,7 @@ function GroupMessageCreate({ onClose, onBoardAdded, username }) {
 
   const handleCreateDiscussion = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/start-discussion', {
+      const response = await axios.post(ROUTE + '/start-discussion', {
         discussionName,
         code: generatedCode,
         username: localStorage.getItem('registeredUsername'),  
@@ -31,7 +32,7 @@ function GroupMessageCreate({ onClose, onBoardAdded, username }) {
 
   const handleJoinDiscussion = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/join-discussion', {
+      const response = await axios.post(ROUTE + '/join-discussion', {
         discussionCode,
         username: localStorage.getItem('registeredUsername'),
       });
@@ -52,7 +53,7 @@ function GroupMessageCreate({ onClose, onBoardAdded, username }) {
 
   const generateRandomCode = () => {
     const codeLength = 10;
-    const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const characters = '0123456789';
     let code = '';
 
     for (let i = 0; i < codeLength; i++) {

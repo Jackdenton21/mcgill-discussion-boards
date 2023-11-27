@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Popup from '../components/directMessageCreate';
 import GroupMessageCreate from '../components/groupMessageCreate'; // Import the GroupMessageCreate component
-import { ROUTE } from '../constants';
+import { ROUTE } from '../globals';
 
 function DiscussionBoard() {
   const [username, setUsername] = useState('');
