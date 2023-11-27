@@ -1,11 +1,12 @@
+// available-boards.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/AvailableBoard.css';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header'; // Import the Header component
-//import ContactPopup from '../components/Popup';
-import Popup from '../components/Popup';
-
+import Header from '../components/Header';
+import Popup from '../components/directMessageCreate';
+import GroupMessageCreate from '../components/groupMessageCreate'; // Import the GroupMessageCreate component
 import { ROUTE } from '../constants';
 
 function DiscussionBoard() {
@@ -14,6 +15,7 @@ function DiscussionBoard() {
   const [boardsDM, setBoardsDM] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isGroupPopupOpen, setIsGroupPopupOpen] = useState(false); // New state for group discussions popup
 
   const navigate = useNavigate();
 
@@ -28,20 +30,18 @@ function DiscussionBoard() {
       const storedUsername = localStorage.getItem('registeredUsername');
       setUsername(storedUsername || 'User');
       const response = await axios.post(`http://localhost:3001/discussion-board`, { username: storedUsername });
-      setBoards(response.data.discussions || []); // Expecting an array of board names for groups
-      setBoardsDM(response.data.discussionsDM || []); // Expecting an array of board names for direct messages
+      setBoards(response.data.discussions || []);
+      setBoardsDM(response.data.discussionsDM || []);
     } catch (error) {
       console.error('Error fetching boards:', error);
     }
     setIsLoading(false);
   };
 
-
   useEffect(() => {
     fetchBoards();
   }, []);
 
-  // Popup handling
   const handleOpenPopup = () => {
     setIsPopupOpen(true);
   };
@@ -52,17 +52,27 @@ function DiscussionBoard() {
   };
 
   const onBoardAdded = (boardName, boardId) => {
-    // Navigate with both name and ID
-    fetchBoards()
+    fetchBoards();
     navigate(`/board/${boardName}`, { state: { boardName, boardId } });
   };
 
+  const handleMessageAdded = (updatedContacts) => {
+    console.log('Contact added. Updated contacts:', updatedContacts);
+  };
 
-    // Handle addition of a message
-    const handleMessageAdded = (updatedContacts) => {
-      // Update the state or perform actions with the updated contact list
-      console.log('Contact added. Updated contacts:', updatedContacts);
-    };
+  // New functions and state for group discussions popup
+  const handleOpenGroupPopup = () => {
+    setIsGroupPopupOpen(true);
+  };
+
+  const handleCloseGroupPopup = () => {
+    setIsGroupPopupOpen(false);
+  };
+
+  const onGroupBoardAdded = (boardName, boardId) => {
+    fetchBoards();
+    navigate(`/board/${boardName}`, { state: { boardName, boardId } });
+  };
 
   if (isLoading) {
     return <div className="Loading">Loading...</div>;
@@ -70,54 +80,49 @@ function DiscussionBoard() {
 
   return (
     <div className="Home">
-            <Header />
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-      {/* Discussion Boards */}
-      {boards.length > 0 ? (
-        <div>
-          <div className="main-container">
-              <div className="header-container">
-              <h2 className="Subtitle">Group Discussions</h2>
-              <button className="round-button">+</button>
+      <Header />
+      <br />
+      <br />
+      <br />
+      <br />
+
+      {/* Group Discussions */}
+      <div>
+        <div className="main-container">
+          <div className="header-container">
+            <h2 className="Subtitle">Group Discussions</h2>
+            <button className="round-button" onClick={handleOpenGroupPopup}>
+              +
+            </button>
           </div>
         </div>
 
-          
-          <ul className="BoardList">
-            {boards.map((board, index) => (
-              <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
+        <ul className="BoardList">
+          {boards.map((board, index) => (
+            <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
               {board.name}
             </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <div>
-          It seems like you haven't joined any group boards.
-          <a href="/join-boards">Sign up here</a> to join a discussion board.
-        </div>
-      )}
+          ))}
+        </ul>
+      </div>
 
       {/* Direct Message Boards */}
       {boardsDM.length > 0 ? (
         <div>
-          
           <div className="main-container">
-              <div className="header-container">
+            <div className="header-container">
               <h2 className="Subtitle">Direct Messages</h2>
-              <button className="round-button" onClick={handleOpenPopup}>+</button>
+              <button className="round-button" onClick={handleOpenPopup}>
+                +
+              </button>
+            </div>
           </div>
-        </div>
-
 
           <ul className="BoardList">
             {boardsDM.map((board, index) => (
               <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
-              {board.name}
-            </li>
+                {board.name}
+              </li>
             ))}
           </ul>
         </div>
@@ -127,18 +132,22 @@ function DiscussionBoard() {
           <a href="/join-dm">Start a direct message</a>.
         </div>
       )}
-    {/* Contact Popup */}
-    {isPopupOpen && (
-      
-      <div className="popup-overlay">
-      <Popup onClose={handleClosePopup} onMessageAdded={handleMessageAdded} onBoardAdded={onBoardAdded}/>
-      </div>
-    )}
-    </div>
 
-        
+      {/* Contact Popup */}
+      {isPopupOpen && (
+        <div className="popup-overlay">
+          <Popup onClose={handleClosePopup} onMessageAdded={handleMessageAdded} onBoardAdded={onBoardAdded} />
+        </div>
+      )}
+
+      {/* Group Discussion Popup */}
+      {isGroupPopupOpen && (
+        <div className="popup-overlay">
+          <GroupMessageCreate onClose={handleCloseGroupPopup} onBoardAdded={onGroupBoardAdded} />
+        </div>
+      )}
+    </div>
   );
 }
-
 
 export default DiscussionBoard;

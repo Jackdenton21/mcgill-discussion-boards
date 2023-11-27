@@ -65,6 +65,8 @@ const discussionSchema = new mongoose.Schema({
   discussionID: Number,
   usernames: Array,
   discussionName: String,
+  code: Number,
+  admin: String,
 });
 discussionSchema.index({ discussionID: 1 });
 const Discussion = slackDB.model('discussionboards', discussionSchema);
@@ -156,7 +158,7 @@ app.post('/discussion-board', async (req, res) => {
     }
 
     const discussionIDs = userDiscussion.Did || [];
-    console.log('discussionIDs:', discussionIDs);
+    //console.log('discussionIDs:', discussionIDs);
 
     // Step 2: Retrieve discussionNames based on the retrieved discussionIDs
     const discussionCollection = await Discussion.find({
@@ -169,17 +171,17 @@ app.post('/discussion-board', async (req, res) => {
       usernames: { $size: 2 },
     });
 
-    console.log('discussionCollection:', discussionCollection);
+    //console.log('discussionCollection:', discussionCollection);
 
     const discussions = discussionCollection.map(doc => {
       return { name: doc.discussionName, id: doc._id };
     });    
-    console.log('discussions:', discussions);
+    //console.log('discussions:', discussions);
 
     const discussionsDM = discussionCollectionDM.map(doc => {
       return { name: doc.discussionName, id: doc._id };
     });    
-    console.log('discussions:', discussionsDM);
+    //console.log('discussions:', discussionsDM);
 
     res.status(200).json({ discussions,discussionsDM });
 
@@ -263,6 +265,74 @@ app.post('/find-user-by-email', async (req, res) => {
   }
 });
 
+app.post('/start-discussion', async (req, res) => {
+  const { discussionName, code, username } = req.body;
+  //console.log('Received data:', { discussionName, code, username });
+
+  try {
+    const discussionCount = await Discussion.countDocuments();
+    const newDiscussionID = discussionCount + 1;
+
+    const newDiscussion = new Discussion({
+      discussionID: newDiscussionID,
+      usernames: [username],
+      discussionName: discussionName,
+      code: code,
+      admin: username,
+    });
+
+    const savedDiscussion = await newDiscussion.save();
+
+    const currentUser = await User.findOne({ username });
+    currentUser.Did.push(newDiscussionID);
+    await currentUser.save();
+
+    res.status(201).json({ boardName: savedDiscussion.discussionName, boardId: savedDiscussion._id });
+  } catch (error) {
+    //console.error('Error in creating new discussion:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/join-discussion', async (req, res) => {
+  const { discussionCode, username } = req.body;
+
+  try {
+    // Step 1: Find the discussion board with the given code
+    const discussion = await Discussion.findOne({ code: discussionCode });
+
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found with the given code.' });
+    }
+
+    // Step 2: Check if the user is already part of the discussion
+    if (discussion.usernames.includes(username)) {
+      return res.status(400).json({ error: 'User is already part of the discussion.' });
+    }
+
+    // Step 3: Add the user to the discussion
+    discussion.usernames.push(username);
+    await discussion.save();
+
+    // Step 4: Update the user's Did array with the discussionID
+    const user = await User.findOne({ username });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    user.Did.push(discussion.discussionID);
+    await user.save();
+
+    res.status(200).json({ boardName: discussion.discussionName, boardId: discussion._id });
+  } catch (error) {
+    console.error('Error in joining discussion:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
 
 
 // Socket.IO setup
@@ -282,11 +352,11 @@ io.use(socketIoJwt.authorize({
 }));
 
 io.on('connection', (socket) => {
-  console.log('Authenticated client connected');
+  //console.log('Authenticated client connected');
 
   socket.on('joinDiscussion', ({ discussionID }) => {
     socket.join(discussionID);
-    console.log(`Joined discussion ${discussionID}`);
+    //console.log(`Joined discussion ${discussionID}`);
   });
 
   socket.on('sendMessage', async ({ discussionID, sender, message }) => {
@@ -295,17 +365,18 @@ io.on('connection', (socket) => {
       const savedMessage = await newMessage.save();
       io.to(discussionID).emit('message', savedMessage);
     } catch (error) {
-      console.error('Error saving message:', error);
+      //console.error('Error saving message:', error);
     }
   });
 
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    //console.log('Client disconnected');
   });
 });
 
 // Start the HTTP server instead of the Express app
 server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  //console.log(`Server is running on port ${port}`);
 });
+
