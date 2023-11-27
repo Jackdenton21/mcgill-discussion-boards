@@ -52,7 +52,7 @@ function Header({ onContactAdded }) {
 
   return (
     <header className="AppHeader">
-      <h1>Slack clone</h1>
+      <h1>McGill Discussion Boards</h1>
       <h2>Discussion Board</h2>
 
       <div className="HeaderUsername">
