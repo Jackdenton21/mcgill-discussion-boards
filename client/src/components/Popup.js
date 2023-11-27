@@ -1,6 +1,7 @@
 // Popup.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import { ROUTE } from '../globals';
 
 function Popup({ onClose, onContactAdded, onBoardAdded }) {
     const [contactInput, setContactInput] = useState('');
@@ -21,14 +22,14 @@ function Popup({ onClose, onContactAdded, onBoardAdded }) {
 
             // If the contact type is Email, find the corresponding username
             if (contactType === 'Email') {
-                const userResponse = await axios.post('http://localhost:3001/find-user-by-email', {
+                const userResponse = await axios.post(ROUTE+'/find-user-by-email', {
                     email: contactInput,
                 });
                 newUsername = userResponse.data.username;
             }
 
             // Start discussion with the username
-            const response = await axios.post('http://localhost:3001/start-discussion-username', {
+            const response = await axios.post(ROUTE+'/start-discussion-username', {
                 currentUser: localStorage.getItem('registeredUsername'),
                 newUsername: newUsername,
             });

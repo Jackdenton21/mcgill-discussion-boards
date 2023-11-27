@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
 //import '../styles.css'; // Adjust the path as necessary
 import { useAuth } from '../AuthContext'; // Import useAuth
+import { ROUTE } from '../globals';
 
 
 
@@ -18,7 +19,7 @@ const LoginForm = () => {
     e.preventDefault();
     setError(''); // Clear any existing errors
     try {
-      const response = await axios.post('http://localhost:3001/login', { userOrEmail, password });
+      const response = await axios.post(ROUTE+'/login', { userOrEmail, password });
 
       if (response.status === 200 && response.data.user && response.data.token) {
         console.log('Login successful:', response.data);

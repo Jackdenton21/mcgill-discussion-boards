@@ -4,6 +4,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom'; // Impor
 import "../styles/Board.css";
 import axios from 'axios';
 import Header from '../components/Header';
+import { ROUTE } from '../globals';
 
 function Board() {
   const location = useLocation();
@@ -38,13 +39,13 @@ function Board() {
       return;
     }
 
-    const newSocket = io('http://localhost:3001', {
+    const newSocket = io(ROUTE, {
       query: { token }
     });
 
     const fetchMessages = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/messages/${boardId}`);
+        const response = await axios.get(ROUTE+`/messages/${boardId}`);
         setMessages(response.data);
       } catch (error) {
         console.error('Error fetching messages:', error);
