@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
 //import '../styles.css'; // Adjust the path as necessary
+import { useAuth } from '../AuthContext'; // Import useAuth
+import { ROUTE } from '../globals';
+
 
 
 const LoginForm = () => {
@@ -9,19 +12,18 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Use useNavigate hook
+  const { login } = useAuth(); // Use the login function from context
 
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(''); // Clear any existing errors
     try {
-      const response = await axios.post('http://localhost:3001/login', { userOrEmail, password });
+      const response = await axios.post(ROUTE+'/login', { userOrEmail, password });
 
       if (response.status === 200 && response.data.user && response.data.token) {
         console.log('Login successful:', response.data);
-        localStorage.setItem('jwt', response.data.token);
-        localStorage.setItem('registeredUsername', response.data.user.username);
-
+        login(response.data.token, response.data.user.username); 
         navigate('/discussion-board');
 
       } else {

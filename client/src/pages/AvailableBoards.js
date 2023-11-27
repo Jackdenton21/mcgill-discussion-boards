@@ -29,9 +29,10 @@ function DiscussionBoard() {
     try {
       const storedUsername = localStorage.getItem('registeredUsername');
       setUsername(storedUsername || 'User');
-      const response = await axios.post(`http://localhost:3001/discussion-board`, { username: storedUsername });
-      setBoards(response.data.discussions || []);
-      setBoardsDM(response.data.discussionsDM || []);
+
+      const response = await axios.post(ROUTE + `/discussion-board`, { username: storedUsername });
+      setBoards(response.data.discussions || []); // Expecting an array of board names for groups
+      setBoardsDM(response.data.discussionsDM || []); // Expecting an array of board names for direct messages
     } catch (error) {
       console.error('Error fetching boards:', error);
     }
