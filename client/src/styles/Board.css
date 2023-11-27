@@ -1,5 +1,5 @@
 .board-container {
-  margin-top: 60px;
+    width: 66%;
   }
   
   .message-list {
@@ -14,7 +14,11 @@
   .message-form {
     /* Styles for the message form */
     display: flex;
+    width: 66%;
     margin-top: 10px;
+    margin-top: auto; /* Push the message-form to the bottom */
+    position: fixed; /* Fix the position */
+    bottom: 0; /* Stick it to the bottom */
   }
   
   .message-input {
@@ -29,7 +33,19 @@
   }
 
 
+
+
 h1{
     color:black;
+}
+
+.main-board-container {
+  padding: 60px;
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar-container {
+  flex: 0 0 auto;
 }
   

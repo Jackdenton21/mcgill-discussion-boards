@@ -5,6 +5,7 @@ import "../styles/Board.css";
 import axios from 'axios';
 import Header from '../components/Header';
 import { ROUTE } from '../globals';
+import SideBar from '../components/SideBar';
 
 function Board() {
   const location = useLocation();
@@ -84,23 +85,28 @@ function Board() {
   return (
     <div>
       <Header />
-      <div className="board-container">
-        <h1>{boardName}</h1>
-        <div className="message-list" ref={messageListRef}>
-          {messages.map((msg, index) => (
-            <p key={index}><strong>{msg.sender}</strong>: {msg.message}</p>
-          ))}
+      <div className = "main-board-container">
+        <div className="sidebar-container">
+        <SideBar/>
         </div>
-        <form onSubmit={handleSendMessage} className="message-form">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="message-input"
-          />
-          <button type="submit" className="send-message-button">Send</button>
-        </form>
+        <div className="board-container">
+          <h1>{boardName}</h1>
+          <div className="message-list" ref={messageListRef}>
+            {messages.map((msg, index) => (
+              <p key={index}><strong>{msg.sender}</strong>: {msg.message}</p>
+            ))}
+          </div>
+          <form onSubmit={handleSendMessage} className="message-form">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              className="message-input"
+            />
+            <button type="submit" className="send-message-button">Send</button>
+          </form>
+        </div>
       </div>
     </div>
   );
