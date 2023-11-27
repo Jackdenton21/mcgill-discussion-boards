@@ -107,31 +107,26 @@ function DiscussionBoard() {
       </div>
 
       {/* Direct Message Boards */}
-      {boardsDM.length > 0 ? (
-        <div>
-          <div className="main-container">
-            <div className="header-container">
-              <h2 className="Subtitle">Direct Messages</h2>
-              <button className="round-button" onClick={handleOpenPopup}>
-                +
-              </button>
-            </div>
-          </div>
 
-          <ul className="BoardList">
-            {boardsDM.map((board, index) => (
-              <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
-                {board.name}
-              </li>
-            ))}
-          </ul>
+      <div>
+        <div className="main-container">
+          <div className="header-container">
+            <h2 className="Subtitle">Direct Messages</h2>
+            <button className="round-button" onClick={handleOpenPopup}>
+              +
+            </button>
+          </div>
         </div>
-      ) : (
-        <div>
-          It seems like you haven't joined any direct message boards.
-          <a href="/join-dm">Start a direct message</a>.
-        </div>
-      )}
+
+        <ul className="BoardList">
+          {boardsDM.map((board, index) => (
+            <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
+              {board.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+
 
       {/* Contact Popup */}
       {isPopupOpen && (

@@ -52,7 +52,7 @@ function GroupMessageCreate({ onClose, onBoardAdded, username }) {
 
   const generateRandomCode = () => {
     const codeLength = 10;
-    const characters = '0123456789';
+    const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let code = '';
 
     for (let i = 0; i < codeLength; i++) {
