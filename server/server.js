@@ -61,13 +61,38 @@ const chatMessageSchema = new mongoose.Schema({
 });
 const ChatMessage = slackDB.model('ChatMessage', chatMessageSchema);
 
+// Define the 'Channel' model and schema
+const channelSchema = new mongoose.Schema({
+  name: String,
+});
+
+const Channel = slackDB.model('Channel', channelSchema);
+
+// Define the 'Discussion' model and schema
 const discussionSchema = new mongoose.Schema({
   discussionID: Number,
   usernames: Array,
   discussionName: String,
+  channels: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Channel',
+    },
+  ],
 });
-discussionSchema.index({ discussionID: 1 });
+
+discussionSchema.pre('save', async function (next) {
+  if (!this.channels || this.channels.length === 0) {
+    // Create a new 'General' channel document and add its ObjectId to the 'channels' array
+    const generalChannel = new Channel({ name: 'General' });
+    await generalChannel.save();
+    this.channels.push(generalChannel._id);
+  }
+  next();
+});
+
 const Discussion = slackDB.model('discussionboards', discussionSchema);
+
 
 // LocalStrategy for username/password authentication
 passport.use(new LocalStrategy(
@@ -189,6 +214,28 @@ app.post('/discussion-board', async (req, res) => {
   }
 });
 
+app.get('/channels/:discussionID', async (req, res) => {
+  try {
+    const discussionID = req.params.discussionID;
+
+    // Find the discussion board by ID
+    const discussion = await Discussion.findOne({ _id: discussionID });
+
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion board not found.' });
+    }
+
+    // Retrieve the channels associated with the discussion
+    const channels = await Channel.find({ _id: { $in: discussion.channels } });
+
+    res.status(200).json({ channels });
+  } catch (error) {
+    console.error('Error in /channels/:discussionID:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 // Endpoint to get messages for a discussion
 app.get('/messages/:discussionID', async (req, res) => {
   try {
@@ -262,6 +309,32 @@ app.post('/find-user-by-email', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// Add this route to create a new channel
+app.post('/channels', async (req, res) => {
+  try {
+    const { discussionID, channelName } = req.body;
+
+    // Create a new channel document and save it to the database
+    const newChannel = new Channel({ name: channelName });
+    await newChannel.save();
+
+    // Add the new channel's ObjectId to the discussion's channels array
+    const discussion = await Discussion.findById(discussionID);
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found' });
+    }
+    discussion.channels.push(newChannel._id);
+    await discussion.save();
+
+    res.status(201).json({ channel: newChannel });
+  } catch (error) {
+    console.error('Error creating a new channel:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 
 

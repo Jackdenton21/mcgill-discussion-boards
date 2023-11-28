@@ -1,17 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import "../styles/SideBar.css";
 
-const SideBar = () => {
+const SideBar = ({ channels, onAddChannel }) => {
+  const [newChannelName, setNewChannelName] = useState('');
+
+  const handleAddChannel = () => {
+    if (newChannelName.trim()) {
+      onAddChannel(newChannelName); // Call the parent component's function to add the channel
+      setNewChannelName('');
+    }
+  };
+
   return (
     <div className="sidebar-container">
       <h2>Channels</h2>
       <ul className="sidebar-list">
-        {/* Add your dummy channel items here */}
-        <li>#channel1 </li>
-        <li>#channel2</li>
-        <li>#channel3</li>
+        {channels.map((channel) => (
+          <li key={channel._id}>#{channel.name}</li>
+        ))}
       </ul>
-      <button className="add-channel-button">Add Channel</button>
+      <div className="add-channel-container">
+        <input
+          type="text"
+          placeholder="New Channel Name"
+          value={newChannelName}
+          onChange={(e) => setNewChannelName(e.target.value)}
+        />
+        <button onClick={handleAddChannel} className="add-channel-button">
+          Add Channel
+        </button>
+      </div>
     </div>
   );
 };
