@@ -81,6 +81,9 @@ function DiscussionBoard() {
           <div className="main-container">
               <div className="header-container">
               <h2 className="Subtitle">Group Discussions</h2>
+              <form className = "search-discussionboards">
+                <input type="text" placeholder="Search for a discussion board"/>
+              </form>
               <button className="round-button">+</button>
           </div>
         </div>
@@ -108,11 +111,12 @@ function DiscussionBoard() {
           <div className="main-container">
               <div className="header-container">
               <h2 className="Subtitle">Direct Messages</h2>
+              <form className = "search-directmessages">
+                <input type="text" placeholder="Search for a direct message"/>
+              </form>
               <button className="round-button" onClick={handleOpenPopup}>+</button>
           </div>
         </div>
-
-
           <ul className="BoardList">
             {boardsDM.map((board, index) => (
               <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
