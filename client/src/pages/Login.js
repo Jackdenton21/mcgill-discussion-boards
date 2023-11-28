@@ -12,7 +12,7 @@ function Login() {
 
     return (
         <div className="login-container"> 
-            <h1>McGill Slack clone!</h1>
+            <h1>McGill Discussions!</h1>
             <LoginForm />
             <p>Need an account? <button onClick={handleRegisterClick} className="App-link">Register here</button></p>
         </div>

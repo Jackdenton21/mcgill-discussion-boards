@@ -11,7 +11,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Align items to the start */
-  background-color: rgb(223, 74, 74); /* Example background color */
+  background-color: rgb(133, 32, 32, 0.75); /* Example background color */
   color: white; /* Text color */
   padding: 10px 20px; /* Adjust padding as needed */
   box-sizing: border-box; /* Ensures padding doesn't affect width */
@@ -85,5 +85,7 @@ html, body {
 
 button {
   border: 1px solid white;
-  background-color: #D43838;
+  background-color: #a42525;
 }
+
+

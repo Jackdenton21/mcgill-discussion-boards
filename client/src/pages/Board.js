@@ -139,11 +139,22 @@ function Board() {
         </div>
         <div className="board-container">
           <h1>{boardName}</h1>
+          
           <div className="message-list" ref={messageListRef}>
-            {messages.map((msg, index) => (
-              <p key={index}><strong>{msg.sender}</strong>: {msg.message}</p>
-            ))}
+            {messages.map((msg, index) => {
+              const isSameSenderAsPrevious = index > 0 && messages[index - 1].sender === msg.sender;
+              const messageClass = isSameSenderAsPrevious ? "message-no-top-border" : "";
+              const senderClass = msg.sender === username ? "message-sent" : "message-received";
+
+              return (
+                <div key={index} className={`${senderClass} ${messageClass}`}>
+                {!isSameSenderAsPrevious && <><strong>{msg.sender}</strong><br /></>}
+                {msg.message}
+                </div>
+              );
+            })}
           </div>
+
           <form onSubmit={handleSendMessage} className="message-form">
             <input
               type="text"

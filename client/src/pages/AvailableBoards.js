@@ -78,10 +78,13 @@ function DiscussionBoard() {
 
   return (
     <div className="Home">
+      
       <Header />
-      <div className="entireavailableboardspage">
+      
         {/* Common Search Bar */}
+        
         <form className="search-discussionboards">
+          
           <input
             className="searchinput"
             type="text"
@@ -90,7 +93,7 @@ function DiscussionBoard() {
             onChange={handleSearchInputChange}
           />
         </form>
-
+        <div className="entireavailableboardspage">
         {/* Group Discussions Section */}
 
         <div>
@@ -147,8 +150,8 @@ function DiscussionBoard() {
           />
         </div>
       )}
-
     </div>
+    
   );
 }
 
