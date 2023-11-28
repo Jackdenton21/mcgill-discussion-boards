@@ -15,6 +15,7 @@ function Board() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [username, setUsername] = useState('');
+  const [channels, setChannels] = useState([]); // State for storing channels
 
   const messageListRef = useRef(null);
 
@@ -40,13 +41,26 @@ function Board() {
       return;
     }
 
+    // Fetch channels when the component mounts
+    const fetchChannels = async () => {
+      try {
+        const response = await axios.get(ROUTE + `/channels/${boardId}`);
+        setChannels(response.data.channels);
+      } catch (error) {
+        console.error('Error fetching channels:', error);
+        // Handle errors appropriately
+      }
+    };
+
+    fetchChannels();
+
     const newSocket = io(ROUTE, {
       query: { token }
     });
 
     const fetchMessages = async () => {
       try {
-        const response = await axios.get(ROUTE+`/messages/${boardId}`);
+        const response = await axios.get(ROUTE + `/messages/${boardId}`);
         setMessages(response.data);
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -68,6 +82,7 @@ function Board() {
     setSocket(newSocket);
 
     return () => newSocket.close();
+
   }, [boardName, boardId, navigate]);
 
   const handleSendMessage = (e) => {
@@ -82,12 +97,27 @@ function Board() {
     }
   };
 
+  const handleAddChannel = async (channelName) => {
+    try {
+      const response = await axios.post(ROUTE + '/channels', {
+        discussionID: boardId,
+        channelName: channelName,
+      });
+
+      // Update the channels state with the new channel
+      setChannels((prevChannels) => [...prevChannels, response.data.channel]);
+    } catch (error) {
+      console.error('Error creating a new channel:', error);
+      // Handle errors appropriately
+    }
+  };
+
   return (
     <div>
       <Header />
-      <div className = "main-board-container">
+      <div className="main-board-container">
         <div className="sidebar-container">
-        <SideBar/>
+          <SideBar channels={channels} onAddChannel={handleAddChannel} />
         </div>
         <div className="board-container">
           <h1>{boardName}</h1>

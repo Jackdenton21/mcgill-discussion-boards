@@ -92,6 +92,7 @@ function DiscussionBoard() {
         </form>
 
         {/* Group Discussions Section */}
+
         <div>
           <div className="main-container">
             <div className="header-container">
@@ -112,7 +113,8 @@ function DiscussionBoard() {
           </ul>
         </div>
 
-        {/* Direct Messages Section */}
+      {/* Direct Message Boards */}
+      
         <div>
           <div className="main-container">
             <div className="header-container">
@@ -145,6 +147,7 @@ function DiscussionBoard() {
           />
         </div>
       )}
+
     </div>
   );
 }
