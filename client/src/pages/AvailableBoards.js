@@ -73,47 +73,46 @@ function DiscussionBoard() {
       (board) =>
         board && board.name && board.name.toLowerCase().includes(input.toLowerCase())
     );
-    setFilteredBoards([
-      ...filteredDiscussionBoards,
-      ...filteredDirectMessageBoards,
-    ]);
+    setFilteredBoards([...filteredDiscussionBoards, ...filteredDirectMessageBoards]);
   };
 
   return (
     <div className="Home">
       <Header />
-      <div class="entireavailableboardspage">
+      <div className="entireavailableboardspage">
+        {/* Common Search Bar */}
+        <form className="search-discussionboards">
+          <input
+            className="searchinput"
+            type="text"
+            placeholder="Search for a discussion board"
+            value={searchInput}
+            onChange={handleSearchInputChange}
+          />
+        </form>
+
+        {/* Group Discussions Section */}
         <div>
           <div className="main-container">
             <div className="header-container">
               <h2 className="Subtitle">Group Discussions</h2>
               <button className="round-button">+</button>
             </div>
-            <form className="search-discussionboards">
-                <input class="searchinput"
-                  type="text"
-                  placeholder="Search for a discussion board"
-                  value={searchInput}
-                  onChange={handleSearchInputChange}
-                />
-              </form>
           </div>
-
           <ul className="BoardList">
-            {(searchInput === '' ? boards : filteredBoards).map(
-              (board, index) => (
-                <li
-                  key={index}
-                  className="Board"
-                  onClick={() => handleBoardClick(board.name, board.id)}
-                >
-                  {board.name}
-                </li>
-              )
-            )}
+            {(searchInput === '' ? boards : filteredBoards).map((board, index) => (
+              <li
+                key={index}
+                className="Board"
+                onClick={() => handleBoardClick(board.name, board.id)}
+              >
+                {board.name}
+              </li>
+            ))}
           </ul>
         </div>
 
+        {/* Direct Messages Section */}
         <div>
           <div className="main-container">
             <div className="header-container">
@@ -124,17 +123,15 @@ function DiscussionBoard() {
             </div>
           </div>
           <ul className="BoardList">
-            {(searchInput === '' ? boardsDM : filteredBoards).map(
-              (board, index) => (
-                <li
-                  key={index}
-                  className="Board"
-                  onClick={() => handleBoardClick(board.name, board.id)}
-                >
-                  {board.name}
-                </li>
-              )
-            )}
+            {(searchInput === '' ? boardsDM : filteredBoards).map((board, index) => (
+              <li
+                key={index}
+                className="Board"
+                onClick={() => handleBoardClick(board.name, board.id)}
+              >
+                {board.name}
+              </li>
+            ))}
           </ul>
         </div>
       </div>

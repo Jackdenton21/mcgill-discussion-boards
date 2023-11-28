@@ -59,14 +59,8 @@ function Header({ onContactAdded }) {
       <button onClick={gotoDiscussionBoard}>Home</button>
 
       <div className="HeaderUsername">
-        <div className="UsernameButton" onClick={handleToggleDropdown}>
-          {username}
-        </div>
-        {showDropdown && (
-          <div className="DropdownMenu" ref={dropdownRef}>
-            <button onClick={handleLogout}>Logout</button>
-          </div>
-        )}
+        <p>{username}</p>
+        <button onClick={handleLogout}>Logout</button>
       </div>
 
 
