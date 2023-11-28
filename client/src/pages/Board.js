@@ -16,8 +16,15 @@ function Board() {
   const [newMessage, setNewMessage] = useState('');
   const [username, setUsername] = useState('');
   const [channels, setChannels] = useState([]); // State for storing channels
+  const [selectedChannel, setSelectedChannel] = useState(null); // State to store selected channel
+
 
   const messageListRef = useRef(null);
+
+  const handleChannelSelect = (channel) => {
+    setSelectedChannel(channel); 
+  };
+  
 
   const scrollToBottom = () => {
     messageListRef.current?.scrollTo({
@@ -46,6 +53,14 @@ function Board() {
       try {
         const response = await axios.get(ROUTE + `/channels/${boardId}`);
         setChannels(response.data.channels);
+  
+        // Find the "General" channel and set it as the selected channel
+        const generalChannel = response.data.channels.find(
+          (channel) => channel.name === 'General'
+        );
+        if (generalChannel) {
+          setSelectedChannel(generalChannel._id);
+        }
       } catch (error) {
         console.error('Error fetching channels:', error);
         // Handle errors appropriately
@@ -117,7 +132,7 @@ function Board() {
       <Header />
       <div className="main-board-container">
         <div className="sidebar-container">
-          <SideBar channels={channels} onAddChannel={handleAddChannel} />
+        <SideBar channels={channels} onAddChannel={handleAddChannel} onSelectChannel={handleChannelSelect} selectedChannel={selectedChannel} />
         </div>
         <div className="board-container">
           <h1>{boardName}</h1>
