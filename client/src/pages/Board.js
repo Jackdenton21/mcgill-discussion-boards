@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { useParams, useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 import "../styles/Board.css";
 import axios from 'axios';
 import Header from '../components/Header';
@@ -18,13 +18,7 @@ function Board() {
   const [channels, setChannels] = useState([]); // State for storing channels
   const [selectedChannel, setSelectedChannel] = useState(null); // State to store selected channel
 
-
   const messageListRef = useRef(null);
-
-  const handleChannelSelect = (channel) => {
-    setSelectedChannel(channel); 
-  };
-  
 
   const scrollToBottom = () => {
     messageListRef.current?.scrollTo({
@@ -73,18 +67,6 @@ function Board() {
       query: { token }
     });
 
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get(ROUTE + `/messages/${boardId}`);
-        setMessages(response.data);
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-        // Handle errors appropriately
-      }
-    };
-
-    fetchMessages();
-
     newSocket.on('connect', () => {
       console.log('Connected to Socket.IO');
       newSocket.emit('joinDiscussion', { discussionID: boardId });
@@ -97,8 +79,28 @@ function Board() {
     setSocket(newSocket);
 
     return () => newSocket.close();
-
   }, [boardName, boardId, navigate]);
+
+  useEffect(() => {
+    fetchMessages(); // Fetch messages when selectedChannel changes
+  }, [selectedChannel]);
+
+  const fetchMessages = async () => {
+    try {
+      // Pass both discussionID and selectedChannel to the API endpoint
+      const response = await axios.get(ROUTE + `/messages/${boardId}`, {
+        params: { discussionID: boardId, channelID: selectedChannel },
+      });
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      // Handle errors appropriately
+    }
+  };
+
+  const handleChannelSelect = (channel) => {
+    setSelectedChannel(channel);
+  };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -106,7 +108,8 @@ function Board() {
       socket.emit('sendMessage', {
         discussionID: boardId,
         sender: username,
-        message: newMessage
+        message: newMessage,
+        channelID: selectedChannel
       });
       setNewMessage('');
     }
