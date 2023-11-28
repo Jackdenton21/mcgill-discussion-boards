@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { useParams, useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 import "../styles/Board.css";
 import axios from 'axios';
 import Header from '../components/Header';
@@ -16,6 +16,7 @@ function Board() {
   const [newMessage, setNewMessage] = useState('');
   const [username, setUsername] = useState('');
   const [channels, setChannels] = useState([]); // State for storing channels
+  const [selectedChannel, setSelectedChannel] = useState(null); // State to store selected channel
 
   const messageListRef = useRef(null);
 
@@ -46,6 +47,14 @@ function Board() {
       try {
         const response = await axios.get(ROUTE + `/channels/${boardId}`);
         setChannels(response.data.channels);
+  
+        // Find the "General" channel and set it as the selected channel
+        const generalChannel = response.data.channels.find(
+          (channel) => channel.name === 'General'
+        );
+        if (generalChannel) {
+          setSelectedChannel(generalChannel._id);
+        }
       } catch (error) {
         console.error('Error fetching channels:', error);
         // Handle errors appropriately
@@ -57,18 +66,6 @@ function Board() {
     const newSocket = io(ROUTE, {
       query: { token }
     });
-
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get(ROUTE + `/messages/${boardId}`);
-        setMessages(response.data);
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-        // Handle errors appropriately
-      }
-    };
-
-    fetchMessages();
 
     newSocket.on('connect', () => {
       console.log('Connected to Socket.IO');
@@ -82,8 +79,28 @@ function Board() {
     setSocket(newSocket);
 
     return () => newSocket.close();
-
   }, [boardName, boardId, navigate]);
+
+  useEffect(() => {
+    fetchMessages(); // Fetch messages when selectedChannel changes
+  }, [selectedChannel]);
+
+  const fetchMessages = async () => {
+    try {
+      // Pass both discussionID and selectedChannel to the API endpoint
+      const response = await axios.get(ROUTE + `/messages/${boardId}`, {
+        params: { discussionID: boardId, channelID: selectedChannel },
+      });
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      // Handle errors appropriately
+    }
+  };
+
+  const handleChannelSelect = (channel) => {
+    setSelectedChannel(channel);
+  };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -91,7 +108,8 @@ function Board() {
       socket.emit('sendMessage', {
         discussionID: boardId,
         sender: username,
-        message: newMessage
+        message: newMessage,
+        channelID: selectedChannel
       });
       setNewMessage('');
     }
@@ -117,7 +135,7 @@ function Board() {
       <Header />
       <div className="main-board-container">
         <div className="sidebar-container">
-          <SideBar channels={channels} onAddChannel={handleAddChannel} />
+        <SideBar channels={channels} onAddChannel={handleAddChannel} onSelectChannel={handleChannelSelect} selectedChannel={selectedChannel} />
         </div>
         <div className="board-container">
           <h1>{boardName}</h1>

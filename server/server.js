@@ -57,6 +57,7 @@ const chatMessageSchema = new mongoose.Schema({
   discussionID: String,
   sender: String,
   message: String,
+  channelID: String,
   timestamp: { type: Date, default: Date.now }
 });
 const ChatMessage = slackDB.model('ChatMessage', chatMessageSchema);
@@ -236,10 +237,13 @@ app.get('/channels/:discussionID', async (req, res) => {
 });
 
 
-// Endpoint to get messages for a discussion
+// Endpoint to get messages for a discussion and channel
 app.get('/messages/:discussionID', async (req, res) => {
   try {
-    const messages = await ChatMessage.find({ discussionID: req.params.discussionID });
+    const { discussionID, channelID } = req.query;
+
+    // Modify the query to filter by both discussionID and channelID
+    const messages = await ChatMessage.find({ discussionID, channelID });
     res.json(messages);
   } catch (error) {
     console.error(error);
@@ -362,9 +366,9 @@ io.on('connection', (socket) => {
     console.log(`Joined discussion ${discussionID}`);
   });
 
-  socket.on('sendMessage', async ({ discussionID, sender, message }) => {
+  socket.on('sendMessage', async ({ discussionID, sender, message, channelID }) => {
     try {
-      const newMessage = new ChatMessage({ discussionID, sender, message });
+      const newMessage = new ChatMessage({ discussionID, sender, message, channelID });
       const savedMessage = await newMessage.save();
       io.to(discussionID).emit('message', savedMessage);
     } catch (error) {
