@@ -44,11 +44,12 @@ html, body {
 /* ... existing styles ... */
 
 .HeaderUsername {
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.HeaderUsername p {
+  margin-right: 10px;
 }
 
 .DropdownContent {
@@ -82,3 +83,7 @@ html, body {
   background-color: #e0e0e0;
 }
 
+button {
+  border: 1px solid white;
+  background-color: #D43838;
+}

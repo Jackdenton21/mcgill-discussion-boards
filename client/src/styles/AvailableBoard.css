@@ -63,6 +63,19 @@
   width: 100%; /* Takes full width of the viewport */
 }
 
+.entireavailableboardspage {
+  margin-top: 100px;
+}
+
+.search-discussionboards {
+  margin-right: 50px;
+  margin-left: 50px;
+  width: 20%;
+}
+
+.searchinput {
+  padding: none;
+}
 
 /* Updated to display items horizontally */
 .BoardList {
@@ -77,7 +90,7 @@
 .Board {
   margin: 30px;
   padding: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid rgb(219, 32, 32);
   border-radius: 8px;
   background-color: #ebecf6;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

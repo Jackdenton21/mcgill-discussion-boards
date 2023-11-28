@@ -37,7 +37,7 @@ const LoginForm = () => {
 
 
   return (
-    <form onSubmit={handleLogin}>
+    <form className='loginform' onSubmit={handleLogin}>
       <label>
         Username or Email:
         <input type="text" value={userOrEmail} onChange={(e) => setUserOrEmail(e.target.value)} />

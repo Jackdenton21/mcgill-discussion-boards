@@ -42,26 +42,18 @@ function Header({ onContactAdded }) {
     navigate('/');
   };
 
-  const handleDiscussionBoardsClick = () => {
-    // Navigate to the "discussion-board" route when "Discussion Boards" is clicked
-    navigate('/discussion-board');
-  };
+
+  const gotoDiscussionBoard = () => {
+    navigate('/discussion-board')
+  }
 
   return (
     <header className="AppHeader">
-      {/* Add onClick handler to navigate to the "discussion-board" route */}
-      <h1>McGill Chat</h1>
-      <h2 onClick={handleDiscussionBoardsClick}>Discussion Boards</h2>
-
+      <h1>McGill Discussion Boards</h1>
+      <button onClick={gotoDiscussionBoard}>Home</button>
       <div className="HeaderUsername">
-        <div className="UsernameButton" onClick={handleToggleDropdown}>
-          {username}
-        </div>
-        {showDropdown && (
-          <div className="DropdownMenu" ref={dropdownRef}>
-            <button onClick={handleLogout}>Logout</button>
-          </div>
-        )}
+        <p>{username}</p>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     </header>
   );
