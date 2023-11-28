@@ -63,6 +63,19 @@
   width: 100%; /* Takes full width of the viewport */
 }
 
+.entireavailableboardspage {
+  margin-top: 100px;
+}
+
+.search-discussionboards {
+  margin-right: 50px;
+  margin-left: 50px;
+  width: 20%;
+}
+
+.searchinput {
+  padding: none;
+}
 
 /* Updated to display items horizontally */
 .BoardList {

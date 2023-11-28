@@ -1,4 +1,3 @@
-// Header.js
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Header.css';
 //import ContactPopup from './ContactPopup'; // Import the ContactPopup component
@@ -50,10 +49,14 @@ function Header({ onContactAdded }) {
     navigate('/');
   };
 
+  const gotoDiscussionBoard = () => {
+    navigate('/discussion-board')
+  }
+
   return (
     <header className="AppHeader">
       <h1>McGill Discussion Boards</h1>
-      <h2>Discussion Board</h2>
+      <button onClick={gotoDiscussionBoard}>Home</button>
 
       <div className="HeaderUsername">
         <div className="UsernameButton" onClick={handleToggleDropdown}>
