@@ -76,7 +76,7 @@ function DiscussionBoard() {
             <br></br>
             <br></br>
       {/* Discussion Boards */}
-      {boards.length > 0 ? (
+      
         <div>
           <div className="main-container">
               <div className="header-container">
@@ -94,15 +94,10 @@ function DiscussionBoard() {
             ))}
           </ul>
         </div>
-      ) : (
-        <div>
-          It seems like you haven't joined any group boards.
-          <a href="/join-boards">Sign up here</a> to join a discussion board.
-        </div>
-      )}
+ 
 
       {/* Direct Message Boards */}
-      {boardsDM.length > 0 ? (
+      
         <div>
           
           <div className="main-container">
@@ -121,12 +116,7 @@ function DiscussionBoard() {
             ))}
           </ul>
         </div>
-      ) : (
-        <div>
-          It seems like you haven't joined any direct message boards.
-          <a href="/join-dm">Start a direct message</a>.
-        </div>
-      )}
+      
     {/* Contact Popup */}
     {isPopupOpen && (
       
