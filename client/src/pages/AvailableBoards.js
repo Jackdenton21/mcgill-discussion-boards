@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Popup from '../components/directMessageCreate';
 import GroupMessageCreate from '../components/groupMessageCreate'; // Import the GroupMessageCreate component
+
 import { ROUTE } from '../globals';
 
 function DiscussionBoard() {
@@ -15,12 +16,14 @@ function DiscussionBoard() {
   const [boardsDM, setBoardsDM] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+ 
   const [isGroupPopupOpen, setIsGroupPopupOpen] = useState(false); // New state for group discussions popup
+  const [searchInput, setSearchInput] = useState('');
+  const [filteredBoards, setFilteredBoards] = useState([]);
 
   const navigate = useNavigate();
 
   const handleBoardClick = (boardName, boardId) => {
-    // Navigate with both name and ID
     navigate(`/board/${boardName}`, { state: { boardName, boardId } });
   };
 
@@ -49,7 +52,6 @@ function DiscussionBoard() {
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
-    console.log('closing');
   };
 
   const onBoardAdded = (boardName, boardId) => {
@@ -73,76 +75,102 @@ function DiscussionBoard() {
   const onGroupBoardAdded = (boardName, boardId) => {
     fetchBoards();
     navigate(`/board/${boardName}`, { state: { boardName, boardId } });
+
+  const handleSearchInputChange = (event) => {
+    const input = event.target.value;
+    setSearchInput(input);
+    filterBoards(input);
   };
 
-  if (isLoading) {
-    return <div className="Loading">Loading...</div>;
-  }
+  const filterBoards = (input) => {
+    const filteredDiscussionBoards = boards.filter(
+      (board) =>
+        board && board.name && board.name.toLowerCase().includes(input.toLowerCase())
+    );
+    const filteredDirectMessageBoards = boardsDM.filter(
+      (board) =>
+        board && board.name && board.name.toLowerCase().includes(input.toLowerCase())
+    );
+    setFilteredBoards([...filteredDiscussionBoards, ...filteredDirectMessageBoards]);
+  };
 
   return (
     <div className="Home">
+
+      
       <Header />
-      <br />
-      <br />
-      <br />
-      <br />
+      
+        {/* Common Search Bar */}
+        
+        <form className="search-discussionboards">
+          
+          <input
+            className="searchinput"
+            type="text"
+            placeholder="Search for a discussion board"
+            value={searchInput}
+            onChange={handleSearchInputChange}
+          />
+        </form>
+        <div className="entireavailableboardspage">
+        {/* Group Discussions Section */}
 
-      {/* Group Discussions */}
-      <div>
-        <div className="main-container">
-          <div className="header-container">
-            <h2 className="Subtitle">Group Discussions</h2>
-            <button className="round-button" onClick={handleOpenGroupPopup}>
-              +
-            </button>
+        <div>
+          <div className="main-container">
+            <div className="header-container">
+              <h2 className="Subtitle">Group Discussions</h2>
+              <button className="round-button" onClick={handleOpenGroupPopup}>+</button>
+            </div>
           </div>
+          <ul className="BoardList">
+            {(searchInput === '' ? boards : filteredBoards).map((board, index) => (
+              <li
+                key={index}
+                className="Board"
+                onClick={() => handleBoardClick(board.name, board.id)}
+              >
+                {board.name}
+              </li>
+            ))}
+          </ul>
         </div>
-
-        <ul className="BoardList">
-          {boards.map((board, index) => (
-            <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
-              {board.name}
-            </li>
-          ))}
-        </ul>
-      </div>
 
       {/* Direct Message Boards */}
-
-      <div>
-        <div className="main-container">
-          <div className="header-container">
-            <h2 className="Subtitle">Direct Messages</h2>
-            <button className="round-button" onClick={handleOpenPopup}>
-              +
-            </button>
+      
+        <div>
+          <div className="main-container">
+            <div className="header-container">
+              <h2 className="Subtitle">Direct Messages</h2>
+              <button className="round-button" onClick={handleOpenPopup}>
+                +
+              </button>
+            </div>
           </div>
+          <ul className="BoardList">
+            {(searchInput === '' ? boardsDM : filteredBoards).map((board, index) => (
+              <li
+                key={index}
+                className="Board"
+                onClick={() => handleBoardClick(board.name, board.id)}
+              >
+                {board.name}
+              </li>
+            ))}
+          </ul>
         </div>
-
-        <ul className="BoardList">
-          {boardsDM.map((board, index) => (
-            <li key={index} className="Board" onClick={() => handleBoardClick(board.name, board.id)}>
-              {board.name}
-            </li>
-          ))}
-        </ul>
       </div>
 
-
-      {/* Contact Popup */}
       {isPopupOpen && (
         <div className="popup-overlay">
-          <Popup onClose={handleClosePopup} onMessageAdded={handleMessageAdded} onBoardAdded={onBoardAdded} />
-        </div>
-      )}
-
-      {/* Group Discussion Popup */}
-      {isGroupPopupOpen && (
-        <div className="popup-overlay">
-          <GroupMessageCreate onClose={handleCloseGroupPopup} onBoardAdded={onGroupBoardAdded} />
+          <Popup
+            onClose={handleClosePopup}
+            onMessageAdded={handleMessageAdded}
+            onBoardAdded={onBoardAdded}
+          />
         </div>
       )}
     </div>
+    
   );
 }
 

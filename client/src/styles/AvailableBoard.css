@@ -5,14 +5,19 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #ffffff; /* Maintained your specific color choice */
   font-family: 'Arial', sans-serif; /* Consistent with general styles */
   color: #ff0000;
-
+  background-color: #ffffff; /* Base background color */
+  background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), 
+                    url('https://grantme.ca/wp-content/uploads/2021/09/mcgill-1200x801.jpeg');
+  background-size: cover;
+  background-position: center;
 }
+
+
 .round-button {
-  width: 50px; /* Diameter of the button */
-  height: 50px; /* Diameter of the button */
+  width: 30px; /* Diameter of the button */
+  height: 40px; /* Diameter of the button */
   border-radius: 50%; /* Makes it round */
   font-size: 24px; /* Size of the plus symbol */
   text-align: center; /* Horizontally centers the '+' symbol */
@@ -50,19 +55,37 @@
   background-color: #cc0000; /* Darker shade of red on hover */
 }
 
-.header-container {
-  display: flex; /* Enables flexbox */
-  align-items: center; /* Centers items vertically */
-  text-align: center;
-  gap: 10px; /* Adds space between the h2 and the button */
-}
 
 .main-container {
   display: flex;
   justify-content: center; /* Centers horizontally */
   width: 100%; /* Takes full width of the viewport */
+  text-align: left;
 }
 
+.header-container {
+  display: flex; /* Enables flexbox */
+  align-items: center; /* Centers items vertically */
+  text-align: left;
+  gap: 10px; /* Adds space between the h2 and the button */
+}
+
+.entireavailableboardspage {
+  margin-top: 100px;
+}
+
+.search-discussionboards {
+  margin-top: 20px;
+  margin-right:65%;
+  margin-left: 100px;
+  width: 35%;
+  
+  
+}
+
+.searchinput {
+  padding: none;
+}
 
 /* Updated to display items horizontally */
 .BoardList {
@@ -77,7 +100,7 @@
 .Board {
   margin: 30px;
   padding: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid rgb(219, 32, 32);
   border-radius: 8px;
   background-color: #ebecf6;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -116,6 +139,14 @@
   justify-content: center;
   align-items: center;
   z-index: 1000; /* Ensure it's above all other content */
+}
+
+.Subtitle {
+  color: rgb(77, 77, 77);
+  display: flex;
+  font-family:Geneva, Verdana, sans-serif;
+  font-size: xx-large;
+  text-align: left;
 }
 
 

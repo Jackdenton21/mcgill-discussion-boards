@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { useParams, useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 import "../styles/Board.css";
 import axios from 'axios';
 import Header from '../components/Header';
@@ -15,6 +15,8 @@ function Board() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [username, setUsername] = useState('');
+  const [channels, setChannels] = useState([]); // State for storing channels
+  const [selectedChannel, setSelectedChannel] = useState(null); // State to store selected channel
 
   const messageListRef = useRef(null);
 
@@ -40,21 +42,30 @@ function Board() {
       return;
     }
 
-    const newSocket = io(ROUTE, {
-      query: { token }
-    });
-
-    const fetchMessages = async () => {
+    // Fetch channels when the component mounts
+    const fetchChannels = async () => {
       try {
-        const response = await axios.get(ROUTE+`/messages/${boardId}`);
-        setMessages(response.data);
+        const response = await axios.get(ROUTE + `/channels/${boardId}`);
+        setChannels(response.data.channels);
+  
+        // Find the "General" channel and set it as the selected channel
+        const generalChannel = response.data.channels.find(
+          (channel) => channel.name === 'General'
+        );
+        if (generalChannel) {
+          setSelectedChannel(generalChannel._id);
+        }
       } catch (error) {
-        console.error('Error fetching messages:', error);
+        console.error('Error fetching channels:', error);
         // Handle errors appropriately
       }
     };
 
-    fetchMessages();
+    fetchChannels();
+
+    const newSocket = io(ROUTE, {
+      query: { token }
+    });
 
     newSocket.on('connect', () => {
       console.log('Connected to Socket.IO');
@@ -70,32 +81,80 @@ function Board() {
     return () => newSocket.close();
   }, [boardName, boardId, navigate]);
 
+  useEffect(() => {
+    fetchMessages(); // Fetch messages when selectedChannel changes
+  }, [selectedChannel]);
+
+  const fetchMessages = async () => {
+    try {
+      // Pass both discussionID and selectedChannel to the API endpoint
+      const response = await axios.get(ROUTE + `/messages/${boardId}`, {
+        params: { discussionID: boardId, channelID: selectedChannel },
+      });
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      // Handle errors appropriately
+    }
+  };
+
+  const handleChannelSelect = (channel) => {
+    setSelectedChannel(channel);
+  };
+
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
       socket.emit('sendMessage', {
         discussionID: boardId,
         sender: username,
-        message: newMessage
+        message: newMessage,
+        channelID: selectedChannel
       });
       setNewMessage('');
+    }
+  };
+
+  const handleAddChannel = async (channelName) => {
+    try {
+      const response = await axios.post(ROUTE + '/channels', {
+        discussionID: boardId,
+        channelName: channelName,
+      });
+
+      // Update the channels state with the new channel
+      setChannels((prevChannels) => [...prevChannels, response.data.channel]);
+    } catch (error) {
+      console.error('Error creating a new channel:', error);
+      // Handle errors appropriately
     }
   };
 
   return (
     <div>
       <Header />
-      <div className = "main-board-container">
+      <div className="main-board-container">
         <div className="sidebar-container">
-        <SideBar/>
+        <SideBar channels={channels} onAddChannel={handleAddChannel} onSelectChannel={handleChannelSelect} selectedChannel={selectedChannel} />
         </div>
         <div className="board-container">
           <h1>{boardName}</h1>
+          
           <div className="message-list" ref={messageListRef}>
-            {messages.map((msg, index) => (
-              <p key={index}><strong>{msg.sender}</strong>: {msg.message}</p>
-            ))}
+            {messages.map((msg, index) => {
+              const isSameSenderAsPrevious = index > 0 && messages[index - 1].sender === msg.sender;
+              const messageClass = isSameSenderAsPrevious ? "message-no-top-border" : "";
+              const senderClass = msg.sender === username ? "message-sent" : "message-received";
+
+              return (
+                <div key={index} className={`${senderClass} ${messageClass}`}>
+                {!isSameSenderAsPrevious && <><strong>{msg.sender}</strong><br /></>}
+                {msg.message}
+                </div>
+              );
+            })}
           </div>
+
           <form onSubmit={handleSendMessage} className="message-form">
             <input
               type="text"

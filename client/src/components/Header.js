@@ -1,10 +1,7 @@
-// Header.js
 import React, { useState, useEffect, useRef } from 'react';
-import '../styles/Header.css';
-//import ContactPopup from './ContactPopup'; // Import the ContactPopup component
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useAuth } from '../AuthContext'; // Import useAuth
-
+import '../styles/Header.css';
 
 function Header({ onContactAdded }) {
   const navigate = useNavigate();
@@ -13,7 +10,6 @@ function Header({ onContactAdded }) {
   const [isContactPopupOpen, setIsContactPopupOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { logout } = useAuth(); // Use the logout function from context
-
 
   useEffect(() => {
     // Retrieve the username from localStorage
@@ -38,35 +34,27 @@ function Header({ onContactAdded }) {
     setShowDropdown(prevState => !prevState);
   };
 
-  const handleToggleContactPopup = () => {
-    setIsContactPopupOpen(prevState => !prevState);
-  };
 
   const handleLogout = () => {
     // Logout logic here
-    
     console.log('Logging out...');
     logout(); // Call logout from context
     navigate('/');
   };
 
+
+  const gotoDiscussionBoard = () => {
+    navigate('/discussion-board')
+  }
+
   return (
     <header className="AppHeader">
-      <h1>Slack clone</h1>
-      <h2>Discussion Board</h2>
-
+      <h1>McGill Discussion Boards</h1>
+      <button onClick={gotoDiscussionBoard}>Home</button>
       <div className="HeaderUsername">
-        <div className="UsernameButton" onClick={handleToggleDropdown}>
-          {username}
-        </div>
-        {showDropdown && (
-          <div className="DropdownMenu" ref={dropdownRef}>
-            <button onClick={handleLogout}>Logout</button>
-          </div>
-        )}
+        <p>{username}</p>
+        <button onClick={handleLogout}>Logout</button>
       </div>
-
-
     </header>
   );
 }
