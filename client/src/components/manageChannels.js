@@ -16,7 +16,6 @@ function ManageChannels({existingchannels, onDeleteDiscussionBoard, onClose, onA
     };
 
     const handleDeleteDiscussionBoard = () => {
-        console.log("calling delete channel from manage channels");
         onDeleteDiscussionBoard();
         onClose();
     };

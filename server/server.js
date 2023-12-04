@@ -380,6 +380,83 @@ app.post('/join-discussion', async (req, res) => {
     console.error('Error in joining discussion:', error);
   }
 });
+
+app.post('/add-user', async (req, res) => {
+  const { boardId, username } = req.body;
+  console.log("attempting to add user: "+username+" for this board: "+boardId);
+  try {
+    // Step 1: Find the discussion board with the given code
+    const discussion = await Discussion.findById(boardId);
+
+    if (!discussion) {
+      console.log("it's this one");
+      return res.status(404).json({ error: 'Discussion not found with the given code.' });
+    }
+
+    // Step 2: Check if the user is already part of the discussion
+    if (discussion.usernames.includes(username)) {
+      return res.status(400).json({ error: 'User is already part of the discussion.' });
+    }
+
+    // Step 3: Add the user to the discussion
+    discussion.usernames.push(username);
+    await discussion.save();
+
+    // Step 4: Update the user's Did array with the discussionID
+    const user = await User.findOne({ username });
+    
+    if (!user) {
+      console.log("its the user one");
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    user.Did.push(discussion.discussionID);
+    await user.save();
+
+    res.status(200).json({ boardName: discussion.discussionName, boardId: discussion._id });
+  } catch (error) {
+    console.error('Error in joining discussion:', error);
+  }
+});
+
+app.post('/remove-from-discussion', async (req, res) => {
+  const { username, boardId } = req.body;
+  try {
+    // Find the discussion board by ID
+    const discussion = await Discussion.findById(boardId);
+
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion board not found.' });
+    }
+
+    // Check if the user is part of the discussion
+    if (!discussion.usernames.includes(username)) {
+      return res.status(400).json({ error: 'User is not part of the discussion.' });
+    }
+
+    // Remove the user from the discussion
+    discussion.usernames = discussion.usernames.filter((name) => name !== username);
+    await discussion.save();
+
+    // Update the user's Did array to remove the discussionID
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      console.error(`User ${username} not found.`);
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    user.Did = user.Did.filter((discussionID) => discussionID !== discussion.discussionID);
+    await user.save();
+
+    res.status(200).json({ success: true });
+
+  } catch (error) {
+    console.error('Error removing user from discussion board:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // Add this route to create a new channel
 app.post('/channels', async (req, res) => {
   try {
@@ -400,6 +477,23 @@ app.post('/channels', async (req, res) => {
     res.status(201).json({ channel: newChannel });
   } catch (error) {
     console.error('Error creating a new channel:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/admin', async (req, res) => {
+  try {
+    const { discussionID, username } = req.query;
+    const discussion = await Discussion.findById(discussionID);
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found.' });
+    }
+    if (!discussion.admin || discussion.admin !== username) {
+      return res.status(200).json({ isAdmin: false });
+    }
+    return res.status(200).json({ isAdmin: true });
+  } catch (error) {
+    console.error('Error finding admin:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -436,13 +530,30 @@ app.delete('/removediscussionboard', async (req, res) => {
     await user.save();
 
     res.status(200).json({ success: true });
-    
+
   } catch (error) {
     console.error('Error removing user from discussion board:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
+app.get('/usernames', async (req, res) => {
+  try {
+    const { boardId } = req.query;
+    // Find the discussion board by ID
+    const discussion = await Discussion.findById(boardId);
+
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion board not found.' });
+    }
+
+    // Return the list of usernames in the discussion
+    return res.status(200).json({ usernames: discussion.usernames });
+  } catch (error) {
+    console.error('Error in /usernames:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 // Socket.IO setup
 const server = http.createServer(app);
