@@ -1,9 +1,13 @@
+// available-boards.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/AvailableBoard.css';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import Popup from '../components/Popup';
+import Popup from '../components/directMessageCreate';
+import GroupMessageCreate from '../components/groupMessageCreate'; // Import the GroupMessageCreate component
+
 import { ROUTE } from '../globals';
 
 function DiscussionBoard() {
@@ -12,6 +16,8 @@ function DiscussionBoard() {
   const [boardsDM, setBoardsDM] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+ 
+  const [isGroupPopupOpen, setIsGroupPopupOpen] = useState(false); // New state for group discussions popup
   const [searchInput, setSearchInput] = useState('');
   const [filteredBoards, setFilteredBoards] = useState([]);
 
@@ -26,11 +32,10 @@ function DiscussionBoard() {
     try {
       const storedUsername = localStorage.getItem('registeredUsername');
       setUsername(storedUsername || 'User');
-      const response = await axios.post(ROUTE + `/discussion-board`, {
-        username: storedUsername,
-      });
-      setBoards(response.data.discussions || []);
-      setBoardsDM(response.data.discussionsDM || []);
+
+      const response = await axios.post(ROUTE + `/discussion-board`, { username: storedUsername });
+      setBoards(response.data.discussions || []); // Expecting an array of board names for groups
+      setBoardsDM(response.data.discussionsDM || []); // Expecting an array of board names for direct messages
     } catch (error) {
       console.error('Error fetching boards:', error);
     }
@@ -58,6 +63,19 @@ function DiscussionBoard() {
     console.log('Contact added. Updated contacts:', updatedContacts);
   };
 
+  // New functions and state for group discussions popup
+  const handleOpenGroupPopup = () => {
+    setIsGroupPopupOpen(true);
+  };
+
+  const handleCloseGroupPopup = () => {
+    setIsGroupPopupOpen(false);
+  };
+
+  const onGroupBoardAdded = (boardName, boardId) => {
+    fetchBoards();
+    navigate(`/board/${boardName}`, { state: { boardName, boardId } });
+
   const handleSearchInputChange = (event) => {
     const input = event.target.value;
     setSearchInput(input);
@@ -78,6 +96,7 @@ function DiscussionBoard() {
 
   return (
     <div className="Home">
+
       
       <Header />
       
@@ -100,7 +119,7 @@ function DiscussionBoard() {
           <div className="main-container">
             <div className="header-container">
               <h2 className="Subtitle">Group Discussions</h2>
-              <button className="round-button">+</button>
+              <button className="round-button" onClick={handleOpenGroupPopup}>+</button>
             </div>
           </div>
           <ul className="BoardList">
