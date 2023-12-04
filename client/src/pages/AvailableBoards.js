@@ -20,6 +20,8 @@ function DiscussionBoard() {
   const [isGroupPopupOpen, setIsGroupPopupOpen] = useState(false); // New state for group discussions popup
   const [searchInput, setSearchInput] = useState('');
   const [filteredBoards, setFilteredBoards] = useState([]);
+  const [filteredGroupBoards, setFilteredGroupBoards] = useState([]);
+  const [filteredDMBoards, setFilteredDMBoards] = useState([]);
 
   const navigate = useNavigate();
 
@@ -92,7 +94,8 @@ function DiscussionBoard() {
       (board) =>
         board && board.name && board.name.toLowerCase().includes(input.toLowerCase())
     );
-    setFilteredBoards([...filteredDiscussionBoards, ...filteredDirectMessageBoards]);
+    setFilteredGroupBoards(filteredDiscussionBoards);
+    setFilteredDMBoards(filteredDirectMessageBoards);
   };
 
   return (
@@ -124,7 +127,7 @@ function DiscussionBoard() {
             </div>
           </div>
           <ul className="BoardList">
-            {(searchInput === '' ? boards : filteredBoards).map((board, index) => (
+            {(searchInput === '' ? boards : filteredGroupBoards).map((board, index) => (
               <li
                 key={index}
                 className="Board"
@@ -148,7 +151,7 @@ function DiscussionBoard() {
             </div>
           </div>
           <ul className="BoardList">
-            {(searchInput === '' ? boardsDM : filteredBoards).map((board, index) => (
+            {(searchInput === '' ? boardsDM : filteredDMBoards).map((board, index) => (
               <li
                 key={index}
                 className="Board"
