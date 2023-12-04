@@ -20,6 +20,8 @@ function Board() {
   const [selectedChannel, setSelectedChannel] = useState(null); // State to store selected channel
   const [isChannelPopupOpen, setIsChannelPopupOpen] = useState(false);
   const messageListRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredMessages, setFilteredMessages] = useState([]);
 
   const scrollToBottom = () => {
     messageListRef.current?.scrollTo({
@@ -132,6 +134,40 @@ function Board() {
     }
   };
 
+  const handleSearchChange = (event) => {
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+    // Call the function to fetch messages based on the search term
+    fetchFilteredMessages(newSearchTerm);
+  };
+
+  const fetchFilteredMessages = async (searchTerm) => {
+    try {
+      // If the search term is empty, fetch all messages
+      if (!searchTerm) {
+        fetchMessages();
+        return;
+      }
+
+      // Otherwise, fetch messages based on the search term
+      const response = await axios.get(ROUTE + `/messages/${boardId}`, {
+        params: { discussionID: boardId, channelID: selectedChannel },
+      });
+
+      // Filter messages based on the search term
+      const filteredMessages = response.data.filter((msg) =>
+        msg.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        msg.message.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      // Update state with filtered messages
+      setMessages(filteredMessages);
+    } catch (error) {
+      console.error('Error fetching filtered messages:', error);
+      // Handle errors appropriately
+    }
+  };
+
   const handleDeleteDiscussionBoard = async () => {
     console.log("Correct function called");
     try {
@@ -161,7 +197,15 @@ function Board() {
         </div>
         <div className="board-container">
           <h1>{boardName}</h1>
-          
+          <div className='searchmessagesbar'>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search messages..."
+              className="search-bar"
+            />
+          </div>
           <div className="message-list" ref={messageListRef}>
             {messages.map((msg, index) => {
               const isSameSenderAsPrevious = index > 0 && messages[index - 1].sender === msg.sender;
@@ -176,7 +220,6 @@ function Board() {
               );
             })}
           </div>
-
           <form onSubmit={handleSendMessage} className="message-form">
             <input
               type="text"

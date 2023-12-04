@@ -50,7 +50,7 @@ const SideBar = ({ channels, onAddChannel, onSelectChannel, onDeleteDiscussionBo
 </div>
       <div className="add-channel-container">
         <button onClick={handleOpenManageChannelsPopup} className="manage-channels-button">
-          Manage Channels
+          Board Settings
         </button>
       </div>
       {isManageChannelsPopupOpen && (
