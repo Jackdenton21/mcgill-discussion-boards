@@ -1,23 +1,24 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { redirect, useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 import "../styles/Board.css";
 import axios from 'axios';
 import Header from '../components/Header';
 import { ROUTE } from '../globals';
 import SideBar from '../components/SideBar';
+import ManageChannels from '../components/manageChannels';
 
 function Board() {
   const location = useLocation();
   const { boardName, boardId } = location.state || {};
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate();
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [username, setUsername] = useState('');
   const [channels, setChannels] = useState([]); // State for storing channels
   const [selectedChannel, setSelectedChannel] = useState(null); // State to store selected channel
-
+  const [isChannelPopupOpen, setIsChannelPopupOpen] = useState(false);
   const messageListRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -116,6 +117,7 @@ function Board() {
   };
 
   const handleAddChannel = async (channelName) => {
+    console.log("Adding channel from board.js:", channelName);
     try {
       const response = await axios.post(ROUTE + '/channels', {
         discussionID: boardId,
@@ -130,12 +132,32 @@ function Board() {
     }
   };
 
+  const handleDeleteDiscussionBoard = async () => {
+    console.log("Correct function called");
+    try {
+      const response = await axios.delete(ROUTE+`/removediscussionboard`, {
+        data: {
+          username: username,
+          boardId: boardId,
+        },
+      });
+      if (response.status === 200) {
+        navigate('/discussion-board');
+      } else {
+        console.error('Error removing user:', response.data.error);
+      }
+    }
+    catch (error) {
+        console.error('Error removing discussionboard', error);
+    }
+  };
+
   return (
     <div>
       <Header />
       <div className="main-board-container">
         <div className="sidebar-container">
-        <SideBar channels={channels} onAddChannel={handleAddChannel} onSelectChannel={handleChannelSelect} selectedChannel={selectedChannel} />
+        <SideBar channels={channels} onAddChannel={handleAddChannel} onSelectChannel={handleChannelSelect} onDeleteDiscussionBoard ={handleDeleteDiscussionBoard} selectedChannel={selectedChannel} />
         </div>
         <div className="board-container">
           <h1>{boardName}</h1>

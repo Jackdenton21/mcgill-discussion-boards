@@ -404,8 +404,44 @@ app.post('/channels', async (req, res) => {
   }
 });
 
+app.delete('/removediscussionboard', async (req, res) => {
+  try {
+    const { username, boardId } = req.body;
 
+    // Find the discussion board by ID
+    const discussion = await Discussion.findById(boardId);
 
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion board not found.' });
+    }
+
+    // Check if the user is part of the discussion
+    if (!discussion.usernames.includes(username)) {
+      return res.status(400).json({ error: 'User is not part of the discussion.' });
+    }
+
+    // Remove the user from the discussion
+    discussion.usernames = discussion.usernames.filter((name) => name !== username);
+    await discussion.save();
+
+    // Update the user's Did array to remove the discussionID
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      console.error(`User ${username} not found.`);
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    user.Did = user.Did.filter((discussionID) => discussionID !== discussion.discussionID);
+    await user.save();
+
+    res.status(200).json({ success: true });
+    
+  } catch (error) {
+    console.error('Error removing user from discussion board:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 // Socket.IO setup
