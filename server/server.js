@@ -378,6 +378,8 @@ app.post('/join-discussion', async (req, res) => {
     res.status(200).json({ boardName: discussion.discussionName, boardId: discussion._id });
   } catch (error) {
     console.error('Error in joining discussion:', error);
+  }
+});
 // Add this route to create a new channel
 app.post('/channels', async (req, res) => {
   try {

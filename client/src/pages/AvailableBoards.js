@@ -16,7 +16,7 @@ function DiscussionBoard() {
   const [boardsDM, setBoardsDM] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
- 
+
   const [isGroupPopupOpen, setIsGroupPopupOpen] = useState(false); // New state for group discussions popup
   const [searchInput, setSearchInput] = useState('');
   const [filteredBoards, setFilteredBoards] = useState([]);
@@ -75,6 +75,7 @@ function DiscussionBoard() {
   const onGroupBoardAdded = (boardName, boardId) => {
     fetchBoards();
     navigate(`/board/${boardName}`, { state: { boardName, boardId } });
+  };
 
   const handleSearchInputChange = (event) => {
     const input = event.target.value;
@@ -97,22 +98,22 @@ function DiscussionBoard() {
   return (
     <div className="Home">
 
-      
+
       <Header />
-      
-        {/* Common Search Bar */}
-        
-        <form className="search-discussionboards">
-          
-          <input
-            className="searchinput"
-            type="text"
-            placeholder="Search for a discussion board"
-            value={searchInput}
-            onChange={handleSearchInputChange}
-          />
-        </form>
-        <div className="entireavailableboardspage">
+
+      {/* Common Search Bar */}
+
+      <form className="search-discussionboards">
+
+        <input
+          className="searchinput"
+          type="text"
+          placeholder="Search for a discussion board"
+          value={searchInput}
+          onChange={handleSearchInputChange}
+        />
+      </form>
+      <div className="entireavailableboardspage">
         {/* Group Discussions Section */}
 
         <div>
@@ -135,8 +136,8 @@ function DiscussionBoard() {
           </ul>
         </div>
 
-      {/* Direct Message Boards */}
-      
+        {/* Direct Message Boards */}
+
         <div>
           <div className="main-container">
             <div className="header-container">
@@ -169,8 +170,16 @@ function DiscussionBoard() {
           />
         </div>
       )}
+      {isGroupPopupOpen && (
+        <div className="popup-overlay">
+          <GroupMessageCreate
+            onClose={handleCloseGroupPopup}
+            onBoardAdded={onGroupBoardAdded}
+          />
+        </div>
+      )}
     </div>
-    
+
   );
 }
 
