@@ -13,6 +13,8 @@
   
   .message-form {
     /* Styles for the message form */
+    margin-left: 60px;
+
     display: flex;
     width: 66%;
     margin-top: 10px;
@@ -81,4 +83,6 @@ h1{
 
 .searchmessagesbar {
   width: 20%;
+  margin-left: 60px;
+  margin-bottom: 10px;
 }

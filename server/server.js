@@ -184,7 +184,6 @@ app.post('/discussion-board', async (req, res) => {
     }
 
     const discussionIDs = userDiscussion.Did || [];
-    //console.log('discussionIDs:', discussionIDs);
 
     // Step 2: Retrieve discussionNames based on the retrieved discussionIDs
     const discussionCollection = await Discussion.find({
@@ -197,19 +196,17 @@ app.post('/discussion-board', async (req, res) => {
       usernames: { $size: 2 },
     });
 
-    //console.log('discussionCollection:', discussionCollection);
-
     const discussions = discussionCollection.map(doc => {
       return { name: doc.discussionName, id: doc._id };
-    });    
-    //console.log('discussions:', discussions);
+    });
 
+    // For DM discussions, return the username of the other participant
     const discussionsDM = discussionCollectionDM.map(doc => {
-      return { name: doc.discussionName, id: doc._id };
-    });    
-    //console.log('discussions:', discussionsDM);
+      const otherUsername = doc.usernames.find(name => name !== req.body.username);
+      return { name: otherUsername, id: doc._id };
+    });
 
-    res.status(200).json({ discussions,discussionsDM });
+    res.status(200).json({ discussions, discussionsDM });
 
   } catch (error) {
     console.error('Error in /discussion-board:', error);
