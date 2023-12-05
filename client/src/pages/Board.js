@@ -1,24 +1,30 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { redirect, useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 import "../styles/Board.css";
 import axios from 'axios';
 import Header from '../components/Header';
 import { ROUTE } from '../globals';
 import SideBar from '../components/SideBar';
+import ManageChannels from '../components/manageChannels';
 
 function Board() {
   const location = useLocation();
   const { boardName, boardId } = location.state || {};
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate();
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [username, setUsername] = useState('');
   const [channels, setChannels] = useState([]); // State for storing channels
   const [selectedChannel, setSelectedChannel] = useState(null); // State to store selected channel
-
+  const [isChannelPopupOpen, setIsChannelPopupOpen] = useState(false);
   const messageListRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredMessages, setFilteredMessages] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false); 
+  const [usernames, setUsernames] = useState([]);
+
 
   const scrollToBottom = () => {
     messageListRef.current?.scrollTo({
@@ -62,6 +68,29 @@ function Board() {
     };
 
     fetchChannels();
+
+    const checkAdminStatus = async () => {
+      try {
+        const un = localStorage.getItem('registeredUsername');
+        const response = await axios.get(ROUTE + `/admin?discussionID=${boardId}&username=${un}`);
+        console.log(`response: ${response.data.isAdmin}`);
+        setIsAdmin(response.data.isAdmin);
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+      }
+    };
+    checkAdminStatus();
+
+    const fetchUsernames = async () => {
+      try {
+        const response = await axios.get(ROUTE + `/usernames?boardId=${boardId}`);
+        setUsernames(response.data.usernames);
+      } catch (error) {
+        console.error('Error fetching usernames:', error);
+      }
+    };
+    
+    fetchUsernames();
 
     const newSocket = io(ROUTE, {
       query: { token }
@@ -116,6 +145,7 @@ function Board() {
   };
 
   const handleAddChannel = async (channelName) => {
+    console.log("Adding channel from board.js:", channelName);
     try {
       const response = await axios.post(ROUTE + '/channels', {
         discussionID: boardId,
@@ -130,16 +160,109 @@ function Board() {
     }
   };
 
+  const handleSearchChange = (event) => {
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+    // Call the function to fetch messages based on the search term
+    fetchFilteredMessages(newSearchTerm);
+  };
+
+  const fetchFilteredMessages = async (searchTerm) => {
+    try {
+      // If the search term is empty, fetch all messages
+      if (!searchTerm) {
+        fetchMessages();
+        return;
+      }
+
+      // Otherwise, fetch messages based on the search term
+      const response = await axios.get(ROUTE + `/messages/${boardId}`, {
+        params: { discussionID: boardId, channelID: selectedChannel },
+      });
+
+      // Filter messages based on the search term
+      const filteredMessages = response.data.filter((msg) =>
+        msg.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        msg.message.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      // Update state with filtered messages
+      setMessages(filteredMessages);
+    } catch (error) {
+      console.error('Error fetching filtered messages:', error);
+      // Handle errors appropriately
+    }
+  };
+
+  const handleDeleteDiscussionBoard = async () => {
+    try {
+      const response = await axios.delete(ROUTE+`/removediscussionboard`, {
+        data: {
+          username: username,
+          boardId: boardId,
+        },
+      });
+      if (response.status === 200) {
+        navigate('/discussion-board');
+      } else {
+        console.error('Error removing user:', response.data.error);
+      }
+    }
+    catch (error) {
+        console.error('Error removing discussionboard', error);
+    }
+  };
+
+  const handleAddUser = async (username) => {
+    try {
+        const bid = boardId;
+        const response = await axios.post(ROUTE + `/add-user`, {
+            boardId: boardId, 
+            username: username,
+        });
+    } catch (error) {
+        console.error('Error adding user', error);
+    }
+};
+
+  const handleDeleteUser = async (username) => {
+    try {
+      const bid = boardId;
+      console.log(`attempting to remove user ${username} from discussion ${bid}`);
+      const response = await axios.post(ROUTE + `/remove-from-discussion`, {
+          boardId: boardId, 
+          username: username,
+      });
+    } catch (error) {
+      console.error('Error deleting user', error);
+    }
+  };
+
   return (
     <div>
       <Header />
       <div className="main-board-container">
         <div className="sidebar-container">
-        <SideBar channels={channels} onAddChannel={handleAddChannel} onSelectChannel={handleChannelSelect} selectedChannel={selectedChannel} />
+        <SideBar channels={channels} 
+        onAddChannel={handleAddChannel} 
+        onSelectChannel={handleChannelSelect} 
+        onDeleteDiscussionBoard ={handleDeleteDiscussionBoard} 
+        selectedChannel={selectedChannel} isAdmin={isAdmin} 
+        users={usernames} 
+        onAddUser={handleAddUser} 
+        onDeleteUser={handleDeleteUser} />
         </div>
         <div className="board-container">
           <h1>{boardName}</h1>
-          
+          <div className='searchmessagesbar'>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search messages..."
+              className="search-bar"
+            />
+          </div>
           <div className="message-list" ref={messageListRef}>
             {messages.map((msg, index) => {
               const isSameSenderAsPrevious = index > 0 && messages[index - 1].sender === msg.sender;
@@ -154,7 +277,6 @@ function Board() {
               );
             })}
           </div>
-
           <form onSubmit={handleSendMessage} className="message-form">
             <input
               type="text"

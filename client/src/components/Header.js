@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate
 import { useAuth } from '../AuthContext'; // Import useAuth
 import '../styles/Header.css';
 
 function Header({ onContactAdded }) {
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
   const [username, setUsername] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [isContactPopupOpen, setIsContactPopupOpen] = useState(false);
@@ -47,10 +48,15 @@ function Header({ onContactAdded }) {
     navigate('/discussion-board')
   }
 
+  // Conditionally render "Home" button based on current location
+  const isDiscussionBoardPage = location.pathname === '/discussion-board';
+  const showHomeButton = !isDiscussionBoardPage;
+
   return (
     <header className="AppHeader">
       <h1>McGill Discussion Boards</h1>
-      <button onClick={gotoDiscussionBoard}>Home</button>
+
+      {showHomeButton && <button onClick={gotoDiscussionBoard}>Home</button>}
       <div className="HeaderUsername">
         <p>{username}</p>
         <button onClick={handleLogout}>Logout</button>
