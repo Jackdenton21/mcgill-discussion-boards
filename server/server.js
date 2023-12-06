@@ -11,7 +11,7 @@ const socketIoJwt = require('socketio-jwt'); // Ensure this package is installed
 require('dotenv').config();
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 // Middleware for parsing JSON in requests
 app.use(express.json());
