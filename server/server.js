@@ -17,7 +17,7 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // or '*' to allow all origins
+  origin: '*', // or '*' to allow all origins
   credentials: true, // to allow cookies (if using)
   methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE']
 };
