@@ -1,1 +1,1 @@
-export const ROUTE = "http://localhost:3001";
+export const ROUTE = "https://mcgill-discussion-board-backend.vercel.app";

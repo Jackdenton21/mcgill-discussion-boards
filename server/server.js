@@ -17,7 +17,7 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 
 const corsOptions = {
-  origin: '*', // or '*' to allow all origins
+  origin: 'mcgill-discussion-boards.vercel.app',
   credentials: true, // to allow cookies (if using)
   methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE']
 };
