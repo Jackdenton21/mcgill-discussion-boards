@@ -1,9 +1,8 @@
-// ManageChannels.js
 import React, { useEffect, useState, useRef } from 'react';
 import '../styles/manageChannels.css';
 
 function ManageChannels({existingchannels, onDeleteDiscussionBoard, onClose, onAddChannel}) {
-    const [channels, setChannels] = useState([]); // State for storing channels
+    const [channels, setChannels] = useState([]); 
     const [newChannelName, setNewChannelName] = useState('');
 
     const handleAddChannel = () => {
@@ -35,12 +34,12 @@ function ManageChannels({existingchannels, onDeleteDiscussionBoard, onClose, onA
             value={newChannelName}
             onChange={(e) => setNewChannelName(e.target.value)}
             />
-            <button onClick={handleAddChannel} className="add-channel-button">Add Channel</button>
+            <button onClick={handleAddChannel} className="manage-button">Add Channel</button>
         </div>
         <br>
         </br>
-        <button onClick={() => handleDeleteDiscussionBoard()}>Leave This Discussion Board</button>
-        <button onClick={onClose}>Close</button>
+        <button className="manage-button" onClick={() => handleDeleteDiscussionBoard()}>Leave This Discussion Board</button>
+        <button className="manage-button" onClick={onClose}>Close</button>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { redirect, useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { redirect, useLocation, useNavigate } from 'react-router-dom'; 
 import "../styles/Board.css";
 import axios from 'axios';
 import Header from '../components/Header';
@@ -16,8 +16,8 @@ function Board() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [username, setUsername] = useState('');
-  const [channels, setChannels] = useState([]); // State for storing channels
-  const [selectedChannel, setSelectedChannel] = useState(null); // State to store selected channel
+  const [channels, setChannels] = useState([]); 
+  const [selectedChannel, setSelectedChannel] = useState(null); 
   const [isChannelPopupOpen, setIsChannelPopupOpen] = useState(false);
   const messageListRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,8 +43,7 @@ function Board() {
     const token = localStorage.getItem('jwt');
 
     if (!boardName || !boardId || !token) {
-      // Redirect to your desired route if boardName, boardId, or token is missing
-      navigate('/discussion-board'); // Use navigate to redirect
+      navigate('/discussion-board'); 
       return;
     }
 
@@ -54,7 +53,6 @@ function Board() {
         const response = await axios.get(ROUTE + `/channels/${boardId}`);
         setChannels(response.data.channels);
   
-        // Find the "General" channel and set it as the selected channel
         const generalChannel = response.data.channels.find(
           (channel) => channel.name === 'General'
         );
@@ -63,7 +61,6 @@ function Board() {
         }
       } catch (error) {
         console.error('Error fetching channels:', error);
-        // Handle errors appropriately
       }
     };
 
@@ -111,19 +108,17 @@ function Board() {
   }, [boardName, boardId, navigate]);
 
   useEffect(() => {
-    fetchMessages(); // Fetch messages when selectedChannel changes
+    fetchMessages(); 
   }, [selectedChannel]);
 
   const fetchMessages = async () => {
     try {
-      // Pass both discussionID and selectedChannel to the API endpoint
       const response = await axios.get(ROUTE + `/messages/${boardId}`, {
         params: { discussionID: boardId, channelID: selectedChannel },
       });
       setMessages(response.data);
     } catch (error) {
       console.error('Error fetching messages:', error);
-      // Handle errors appropriately
     }
   };
 
@@ -152,45 +147,37 @@ function Board() {
         channelName: channelName,
       });
 
-      // Update the channels state with the new channel
       setChannels((prevChannels) => [...prevChannels, response.data.channel]);
     } catch (error) {
       console.error('Error creating a new channel:', error);
-      // Handle errors appropriately
     }
   };
 
   const handleSearchChange = (event) => {
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
-    // Call the function to fetch messages based on the search term
     fetchFilteredMessages(newSearchTerm);
   };
 
   const fetchFilteredMessages = async (searchTerm) => {
     try {
-      // If the search term is empty, fetch all messages
       if (!searchTerm) {
         fetchMessages();
         return;
       }
 
-      // Otherwise, fetch messages based on the search term
       const response = await axios.get(ROUTE + `/messages/${boardId}`, {
         params: { discussionID: boardId, channelID: selectedChannel },
       });
 
-      // Filter messages based on the search term
       const filteredMessages = response.data.filter((msg) =>
         msg.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
         msg.message.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      // Update state with filtered messages
       setMessages(filteredMessages);
     } catch (error) {
       console.error('Error fetching filtered messages:', error);
-      // Handle errors appropriately
     }
   };
 

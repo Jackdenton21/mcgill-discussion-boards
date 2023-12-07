@@ -1,9 +1,10 @@
 .board-container {
     width: 66%;
+    padding: 10px;
+    margin-top: 10px;
   }
   
   .message-list {
-    /* Styles for the message list */
     margin-left: 60px;
     max-height: 400px;
     overflow-y: auto;
@@ -12,63 +13,55 @@
   }
   
   .message-form {
-    /* Styles for the message form */
     margin-left: 60px;
 
     display: flex;
     width: 66%;
     margin-top: 10px;
-    margin-top: auto; /* Push the message-form to the bottom */
-    position: fixed; /* Fix the position */
-    bottom: 0; /* Stick it to the bottom */
+    margin-top: auto; 
+    position: fixed; 
+    bottom: 0; 
   }
   
   .message-input {
-    /* Styles for the message input field */
     flex-grow: 1;
     padding: 10px;
   }
   
-  .send-message-button {
-    /* Styles for the send message button */
-    padding: 10px 20px;
-  }
+ 
 
 h1{
-    color:black;
+    color:rgb(133, 32, 32);
 }
 
 .main-board-container {
-  padding: 60px;
   display: flex;
   height: 100vh;
   margin-top: 30px;
+  background-color: white;
 }
 
 .sidebar-container {
-  flex: 0 0 20%; /* Set the initial flex basis to 20% */
-  max-width: 20%; /* Ensure it doesn't exceed 20% of the parent container */
-  min-width: 200px; /* Optional: set a minimum width for very small screens */
-  /* Add any other styling as needed */
+  flex: 0 0 20%; 
+  max-width: 20%; 
+  min-width: 200px; 
 }
 
   
 
 .message-sent {
   text-align: left;
-  background-color: #e47171; /* Light grey background for sent messages */
+  background-color: #eae8e8; 
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 10px;
   margin-left:50%;
   word-break: break-word;
-
-  color:white;
 }
 
 .message-received {
   text-align: left;
-  background-color: #e0d7d7; /* Yellow background for received messages */
+  background-color: #eae8e8; 
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 10px;
@@ -85,4 +78,17 @@ h1{
   width: 20%;
   margin-left: 60px;
   margin-bottom: 10px;
+}
+
+.send-message-button {
+  background-color: rgb(133, 32, 32, 0.9); 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }

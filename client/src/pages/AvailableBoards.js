@@ -1,12 +1,10 @@
-// available-boards.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/AvailableBoard.css';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Popup from '../components/directMessageCreate';
-import GroupMessageCreate from '../components/groupMessageCreate'; // Import the GroupMessageCreate component
+import GroupMessageCreate from '../components/groupMessageCreate'; 
 
 import { ROUTE } from '../globals';
 
@@ -17,7 +15,7 @@ function DiscussionBoard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const [isGroupPopupOpen, setIsGroupPopupOpen] = useState(false); // New state for group discussions popup
+  const [isGroupPopupOpen, setIsGroupPopupOpen] = useState(false); 
   const [searchInput, setSearchInput] = useState('');
   const [filteredBoards, setFilteredBoards] = useState([]);
   const [filteredGroupBoards, setFilteredGroupBoards] = useState([]);
@@ -36,8 +34,8 @@ function DiscussionBoard() {
       setUsername(storedUsername || 'User');
 
       const response = await axios.post(ROUTE + `/discussion-board`, { username: storedUsername });
-      setBoards(response.data.discussions || []); // Expecting an array of board names for groups
-      setBoardsDM(response.data.discussionsDM || []); // Expecting an array of board names for direct messages
+      setBoards(response.data.discussions || []); 
+      setBoardsDM(response.data.discussionsDM || []); 
     } catch (error) {
       console.error('Error fetching boards:', error);
     }
@@ -65,7 +63,6 @@ function DiscussionBoard() {
     console.log('Contact added. Updated contacts:', updatedContacts);
   };
 
-  // New functions and state for group discussions popup
   const handleOpenGroupPopup = () => {
     setIsGroupPopupOpen(true);
   };
@@ -100,23 +97,18 @@ function DiscussionBoard() {
 
   return (
     <div className="Home">
-
-
       <Header />
-
-      {/* Common Search Bar */}
-
       <form className="search-discussionboards">
-
         <input
           className="searchinput"
           type="text"
-          placeholder="Search for a discussion board"
+          placeholder="Search discussion..."
           value={searchInput}
           onChange={handleSearchInputChange}
         />
       </form>
       <div className="entireavailableboardspage">
+        
         {/* Group Discussions Section */}
 
         <div>

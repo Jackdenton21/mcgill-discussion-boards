@@ -20,9 +20,8 @@ const SideBar = ({ channels, onAddChannel, onSelectChannel, onDeleteDiscussionBo
   };
 
   const handleChannelClick = (channel) => {
-    // Call the parent component's function to notify about the selected channel
     onSelectChannel(channel._id);
-    setSelectedChannelId(channel._id); // Update the selected channel id
+    setSelectedChannelId(channel._id); 
   };
 
   const handleOpenManageChannelsPopup = () => {

@@ -1,9 +1,8 @@
-// ManageChannels.js
 import React, { useEffect, useState, useRef } from 'react';
 import '../styles/manageUsers.css'
 
 function ManageUsers({existingUsers, onDeleteDiscussionBoard, onClose, onAddUser, onDeleteUser}) {
-    const [users, setUsers] = useState([]); // State for storing channels
+    const [users, setUsers] = useState([]); 
     const [newUserName, setNewUserName] = useState('');
 
     const handleDeleteUser = (user) => {
@@ -27,7 +26,7 @@ function ManageUsers({existingUsers, onDeleteDiscussionBoard, onClose, onAddUser
             {user}
             <button
               onClick={() => handleDeleteUser(user)}
-              className="delete-user-button"
+              className="manage-button"
             >
               Delete
             </button>
@@ -42,11 +41,11 @@ function ManageUsers({existingUsers, onDeleteDiscussionBoard, onClose, onAddUser
             value={newUserName}
             onChange={(e) => setNewUserName(e.target.value)}
             />
-            <button onClick={() => handleAddUser(newUserName)} className="add-user-button">Add User</button>
+            <button className="manage-button" onClick={() => handleAddUser(newUserName)}>Add User</button>
         </div>
         <br>
         </br>
-        <button onClick={onClose}>Close</button>
+        <button className="manage-button" onClick={onClose}>Close</button>
       </div>
     </div>
   );
