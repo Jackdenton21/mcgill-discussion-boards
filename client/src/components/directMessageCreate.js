@@ -2,13 +2,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { ROUTE } from '../globals';
+import '../styles/CreateDiscussion.css';
 
 function Popup({ onClose, onContactAdded, onBoardAdded }) {
     const [contactInput, setContactInput] = useState('');
     const [contactType, setContactType] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Update contactType as soon as the input changes
     const handleChange = (e) => {
         const input = e.target.value;
         setContactInput(input);
@@ -20,7 +20,6 @@ function Popup({ onClose, onContactAdded, onBoardAdded }) {
             setErrorMessage('');
             let newUsername = contactInput;
 
-            // If the contact type is Email, find the corresponding username
             if (contactType === 'Email') {
                 const userResponse = await axios.post(ROUTE+'/find-user-by-email', {
                     email: contactInput,
@@ -28,7 +27,6 @@ function Popup({ onClose, onContactAdded, onBoardAdded }) {
                 newUsername = userResponse.data.username;
             }
 
-            // Start discussion with the username
             const response = await axios.post(ROUTE+'/start-discussion-username', {
                 currentUser: localStorage.getItem('registeredUsername'),
                 newUsername: newUsername,
@@ -52,18 +50,18 @@ function Popup({ onClose, onContactAdded, onBoardAdded }) {
 
     return (
         <div className="Popup">
-            <h2>New Direct Message</h2>
-            <label>
+            <h2 className="red-text">New Direct Message</h2>
+            <label className="red-text">
                 Enter Username or Email:
                 <input
                     type="text"
                     value={contactInput}
-                    onChange={handleChange} // Use handleChange here
+                    onChange={handleChange} 
                 />
             </label>
             {errorMessage && <div className="error-message">{errorMessage}</div>}
-            <button onClick={handleAddMessage}>Message</button>
-            <button onClick={onClose}>Cancel</button>
+            <button className="create-discussion-button" onClick={handleAddMessage}>Message</button>
+            <button className="create-discussion-button" onClick={onClose}>Cancel</button>
         </div>
     );
 }

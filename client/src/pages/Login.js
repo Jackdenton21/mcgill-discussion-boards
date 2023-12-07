@@ -12,9 +12,9 @@ function Login() {
 
     return (
         <div className="login-container"> 
-            <h1>McGill Discussions!</h1>
+            <h1 className="login-title">McGill Discussions!</h1>
             <LoginForm />
-            <p>Need an account? <button onClick={handleRegisterClick} className="App-link">Register here</button></p>
+            <p>Need an account? <button onClick={handleRegisterClick} className="App-link login-button">Register here</button></p>
         </div>
     );
 }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ROUTE } from '../globals'
+import '../styles/CreateDiscussion.css';
+
 
 function GroupMessageCreate({ onClose, onBoardAdded, username }) {
   const [createDiscussion, setCreateDiscussion] = useState(true);
@@ -70,8 +72,8 @@ function GroupMessageCreate({ onClose, onBoardAdded, username }) {
         <button className="close-btn" onClick={onClose}>
           &times;
         </button>
-        <h2>{createDiscussion ? 'Create Discussion' : 'Join Discussion'}</h2>
-        {createDiscussion && (
+        <h2 className="red-text">{createDiscussion ? 'Create Discussion' : 'Join Discussion'}</h2>
+        {<h2 className="red-text">createDiscussion</h2> && (
           <div>
             <label>Discussion Name:</label>
             <input
@@ -79,12 +81,12 @@ function GroupMessageCreate({ onClose, onBoardAdded, username }) {
               value={discussionName}
               onChange={(e) => setDiscussionName(e.target.value)}
             />
-            <p>Generated Code (Remember This): {generatedCode}</p>
+            <p className="red-text">Generated Code (Remember This): {generatedCode}</p>
           </div>
         )}
         {!createDiscussion && (
           <div>
-            <label>Discussion Code:</label>
+            <label className="red-text">Discussion Code:</label>
             <input
               type="text"
               value={discussionCode}
@@ -93,10 +95,10 @@ function GroupMessageCreate({ onClose, onBoardAdded, username }) {
           </div>
         )}
         {error && <div className="error">{error}</div>}
-        <button onClick={createDiscussion ? handleCreateDiscussion : handleJoinDiscussion}>
+        <button  button className="create-discussion-button" onClick={createDiscussion ? handleCreateDiscussion : handleJoinDiscussion}>
           {createDiscussion ? 'Create Discussion' : 'Join Discussion'}
         </button>
-        <p onClick={handleToggleCreateDiscussion}>
+        <p className="red-text" onClick={handleToggleCreateDiscussion}>
           {createDiscussion
             ? "Already have a code? Join a discussion."
             : "Don't have a code? Create a discussion."}

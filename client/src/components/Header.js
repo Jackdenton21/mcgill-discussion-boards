@@ -8,7 +8,6 @@ function Header({ onContactAdded }) {
   const location = useLocation(); // Get current location
   const [username, setUsername] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isContactPopupOpen, setIsContactPopupOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { logout } = useAuth(); // Use the logout function from context
 
@@ -54,12 +53,14 @@ function Header({ onContactAdded }) {
 
   return (
     <header className="AppHeader">
+      <img src={`${process.env.PUBLIC_URL}/mcgill.png`} alt="Logo" className="header-logo" />
+
       <h1>McGill Discussion Boards</h1>
 
-      {showHomeButton && <button onClick={gotoDiscussionBoard}>Home</button>}
+      {showHomeButton && <button onClick={gotoDiscussionBoard} className="home-button">View All Boards</button>}
       <div className="HeaderUsername">
         <p>{username}</p>
-        <button onClick={handleLogout}>Logout</button>
+        <button onClick={handleLogout} className="logoutButton">Logout</button>
       </div>
     </header>
   );
