@@ -1,1 +1,1 @@
-export const ROUTE = "https://mcgill-discussion-board-backend.vercel.app";
+export const ROUTE = "https://mcgill-discussions-backend-d7f27dec6cd7.herokuapp.com";

@@ -17,7 +17,7 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 
 const corsOptions = {
-  origin: 'https://mcgill-discussion-boards.vercel.app',
+  origin: 'https://mcgill-discussions-146b67784000.herokuapp.com',
   credentials: true, // to allow cookies (if using)
   methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE']
 };
@@ -548,7 +548,7 @@ app.get('/usernames', async (req, res) => {
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'https://mcgill-discussion-boards.vercel.app',
+    origin: 'https://mcgill-discussions-146b67784000.herokuapp.com',
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
     credentials: true
   }
