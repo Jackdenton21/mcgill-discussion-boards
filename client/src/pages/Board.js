@@ -81,7 +81,8 @@ function Board() {
     const fetchUsernames = async () => {
       try {
         const response = await axios.get(ROUTE + `/usernames?boardId=${boardId}`);
-        setUsernames(response.data.usernames);
+        const filteredUsernames = response.data.usernames.filter(name => name !== username);        
+        setUsernames(filteredUsernames);       
       } catch (error) {
         console.error('Error fetching usernames:', error);
       }
