@@ -21,7 +21,7 @@ To test the application:
     3. cd to server directory
         -run npm i in the command line
         -run node server.js in the command line
-    4. Access the project at [localhost:3000](https://localhost:3000).
+    4. Access the project at https://localhost:3000
 
 
 ## Team Members & Contributions
