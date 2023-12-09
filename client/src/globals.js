@@ -1,1 +1,1 @@
-export const ROUTE = "https://mcgill-discussions-backend-d7f27dec6cd7.herokuapp.com";
+export const ROUTE = "http://localhost:3001";

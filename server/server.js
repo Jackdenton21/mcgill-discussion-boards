@@ -11,13 +11,13 @@ const socketIoJwt = require('socketio-jwt'); // Ensure this package is installed
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = 3001;
 
 // Middleware for parsing JSON in requests
 app.use(express.json());
 
 const corsOptions = {
-  origin: 'https://mcgill-discussions-146b67784000.herokuapp.com',
+  origin: 'http://localhost:3000', // or '*' to allow all origins
   credentials: true, // to allow cookies (if using)
   methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE']
 };
@@ -548,7 +548,7 @@ app.get('/usernames', async (req, res) => {
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'https://mcgill-discussions-146b67784000.herokuapp.com',
+    origin: 'http://localhost:3000', // or '*' to allow all origins
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
     credentials: true
   }
