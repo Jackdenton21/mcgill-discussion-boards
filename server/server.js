@@ -97,7 +97,7 @@ discussionSchema.pre('save', async function (next) {
 const Discussion = slackDB.model('discussionboards', discussionSchema);
 
 
-// LocalStrategy for username/password authentication
+
 passport.use(new LocalStrategy(
   {
     usernameField: 'userOrEmail',  // Match the name used in your login form
@@ -279,7 +279,7 @@ app.post('/start-discussion-username', async (req, res) => {
       const newDiscussion = new Discussion({
           discussionID: newDiscussionID,
           usernames: [currentUser, newUsername],
-          discussionName: newUsername, // or currentUser, based on preference
+          discussionName: newUsername, 
       });
 
       const savedDiscussion = await newDiscussion.save();
@@ -337,7 +337,6 @@ app.post('/start-discussion', async (req, res) => {
 
     res.status(201).json({ boardName: savedDiscussion.discussionName, boardId: savedDiscussion._id });
   } catch (error) {
-    //console.error('Error in creating new discussion:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -346,23 +345,19 @@ app.post('/join-discussion', async (req, res) => {
   const { discussionCode, username } = req.body;
 
   try {
-    // Step 1: Find the discussion board with the given code
     const discussion = await Discussion.findOne({ code: discussionCode });
 
     if (!discussion) {
       return res.status(404).json({ error: 'Discussion not found with the given code.' });
     }
 
-    // Step 2: Check if the user is already part of the discussion
     if (discussion.usernames.includes(username)) {
       return res.status(400).json({ error: 'User is already part of the discussion.' });
     }
 
-    // Step 3: Add the user to the discussion
     discussion.usernames.push(username);
     await discussion.save();
 
-    // Step 4: Update the user's Did array with the discussionID
     const user = await User.findOne({ username });
     
     if (!user) {
@@ -382,7 +377,6 @@ app.post('/add-user', async (req, res) => {
   const { boardId, username } = req.body;
   console.log("attempting to add user: "+username+" for this board: "+boardId);
   try {
-    // Step 1: Find the discussion board with the given code
     const discussion = await Discussion.findById(boardId);
 
     if (!discussion) {
@@ -390,16 +384,14 @@ app.post('/add-user', async (req, res) => {
       return res.status(404).json({ error: 'Discussion not found with the given code.' });
     }
 
-    // Step 2: Check if the user is already part of the discussion
     if (discussion.usernames.includes(username)) {
       return res.status(400).json({ error: 'User is already part of the discussion.' });
     }
 
-    // Step 3: Add the user to the discussion
     discussion.usernames.push(username);
     await discussion.save();
 
-    // Step 4: Update the user's Did array with the discussionID
+    
     const user = await User.findOne({ username });
     
     if (!user) {
@@ -596,4 +588,3 @@ io.on('connection', (socket) => {
 server.listen(port, () => {
   //console.log(`Server is running on port ${port}`);
 });
-
