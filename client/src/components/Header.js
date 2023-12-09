@@ -1,22 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate
-import { useAuth } from '../AuthContext'; // Import useAuth
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
 import '../styles/Header.css';
 
 function Header({ onContactAdded }) {
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location
+  const location = useLocation();
   const [username, setUsername] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  const { logout } = useAuth(); // Use the logout function from context
+  const { logout } = useAuth();
 
   useEffect(() => {
-    // Retrieve the username from localStorage
     const storedUsername = localStorage.getItem('registeredUsername');
     setUsername(storedUsername || 'User');
 
-    // Event listener to close dropdown when clicking outside
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
@@ -34,29 +32,23 @@ function Header({ onContactAdded }) {
     setShowDropdown(prevState => !prevState);
   };
 
-
   const handleLogout = () => {
-    // Logout logic here
     console.log('Logging out...');
-    logout(); // Call logout from context
+    logout();
     navigate('/');
   };
 
-
   const gotoDiscussionBoard = () => {
-    navigate('/discussion-board')
+    navigate('/discussion-board');
   }
 
-  // Conditionally render "Home" button based on current location
   const isDiscussionBoardPage = location.pathname === '/discussion-board';
   const showHomeButton = !isDiscussionBoardPage;
 
   return (
     <header className="AppHeader">
       <img src={`${process.env.PUBLIC_URL}/mcgill.png`} alt="Logo" className="header-logo" />
-
       <h1>McGill Discussion Boards</h1>
-
       {showHomeButton && <button onClick={gotoDiscussionBoard} className="home-button">View All Boards</button>}
       <div className="HeaderUsername">
         <p>{username}</p>

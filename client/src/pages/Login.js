@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
-import '../styles/Login.css'; // Import the CSS file
+import '../styles/Login.css';
 
 function Login() {
     const navigate = useNavigate();
