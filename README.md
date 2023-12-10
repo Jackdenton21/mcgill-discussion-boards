@@ -46,7 +46,7 @@ To test the application:
 
 **Jacob Lerner (260958030):**
 - Join & Create Group discussions
-- Search discussion boards / messages
+- Search discussion boards
 - Database design
 
 
