@@ -131,8 +131,6 @@ function DiscussionBoard() {
           </ul>
         </div>
 
-        {/* Direct Message Boards */}
-
         <div>
           <div className="main-container">
             <div className="header-container">

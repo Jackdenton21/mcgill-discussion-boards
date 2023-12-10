@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext'; 
 import { ROUTE } from '../globals';
 
-
-
 const LoginForm = () => {
   const [userOrEmail, setUserOrEmail] = useState('');
   const [password, setPassword] = useState('');

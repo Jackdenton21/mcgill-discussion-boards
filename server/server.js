@@ -7,13 +7,12 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
-const socketIoJwt = require('socketio-jwt'); // Ensure this package is installed
+const socketIoJwt = require('socketio-jwt');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Middleware for parsing JSON in requests
 app.use(express.json());
 
 const corsOptions = {
@@ -62,14 +61,12 @@ const chatMessageSchema = new mongoose.Schema({
 });
 const ChatMessage = slackDB.model('ChatMessage', chatMessageSchema);
 
-// Define the 'Channel' model and schema
 const channelSchema = new mongoose.Schema({
   name: String,
 });
 
 const Channel = slackDB.model('Channel', channelSchema);
 
-// Define the 'Discussion' model and schema
 const discussionSchema = new mongoose.Schema({
   discussionID: Number,
   usernames: Array,
@@ -100,12 +97,11 @@ const Discussion = slackDB.model('discussionboards', discussionSchema);
 
 passport.use(new LocalStrategy(
   {
-    usernameField: 'userOrEmail',  // Match the name used in your login form
+    usernameField: 'userOrEmail', 
     passwordField: 'password',
   },
   async (userOrEmail, password, done) => {
     try {
-      // Check both username and email fields
       const user = await User.findOne({ $or: [{ username: userOrEmail }, { email: userOrEmail }] });
 
       if (!user) {
@@ -125,8 +121,6 @@ passport.use(new LocalStrategy(
   }
 ));
 
-
-// Registration route using mongoose
 app.post('/register', async (req, res) => {
   try {
     const existingUser = await User.findOne({ username: req.body.username });
@@ -154,15 +148,12 @@ app.post('/register', async (req, res) => {
   }
 });
 
-
-// Login route using local strategy
 app.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
   const token = jwt.sign({ user: req.user }, process.env.JWT_SECRET || 'your-secret-key');
   res.cookie('jwt', token, { httpOnly: true });
   res.status(200).json({ user: req.user, token });
 });
 
-// Example protected route using JWT strategy
 app.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.status(200).json({ message: 'Protected route accessed.' });
 });
@@ -176,7 +167,6 @@ app.get('/', (req, res) => {
 // New route for discussion board
 app.post('/discussion-board', async (req, res) => {
   try {
-    // Step 1: Retrieve discussionIDs based on the logged-in user
     const userDiscussion = await User.findOne({ username: req.body.username });
 
     if (!userDiscussion) {
@@ -185,10 +175,9 @@ app.post('/discussion-board', async (req, res) => {
 
     const discussionIDs = userDiscussion.Did || [];
 
-    // Step 2: Retrieve discussionNames based on the retrieved discussionIDs
     const discussionCollection = await Discussion.find({
       discussionID: { $in: discussionIDs },
-      usernames: { $not: { $size: 2 } }, // Only return discussions without exactly two usernames (not direct Messages)
+      usernames: { $not: { $size: 2 } }, 
     });
 
     const discussionCollectionDM = await Discussion.find({
@@ -200,7 +189,6 @@ app.post('/discussion-board', async (req, res) => {
       return { name: doc.discussionName, id: doc._id };
     });
 
-    // For DM discussions, return the username of the other participant
     const discussionsDM = discussionCollectionDM.map(doc => {
       const otherUsername = doc.usernames.find(name => name !== req.body.username);
       return { name: otherUsername, id: doc._id };
@@ -218,14 +206,12 @@ app.get('/channels/:discussionID', async (req, res) => {
   try {
     const discussionID = req.params.discussionID;
 
-    // Find the discussion board by ID
     const discussion = await Discussion.findOne({ _id: discussionID });
 
     if (!discussion) {
       return res.status(404).json({ error: 'Discussion board not found.' });
     }
 
-    // Retrieve the channels associated with the discussion
     const channels = await Channel.find({ _id: { $in: discussion.channels } });
 
     res.status(200).json({ channels });
@@ -235,13 +221,10 @@ app.get('/channels/:discussionID', async (req, res) => {
   }
 });
 
-
-// Endpoint to get messages for a discussion and channel
 app.get('/messages/:discussionID', async (req, res) => {
   try {
     const { discussionID, channelID } = req.query;
 
-    // Modify the query to filter by both discussionID and channelID
     const messages = await ChatMessage.find({ discussionID, channelID });
     res.json(messages);
   } catch (error) {
@@ -315,7 +298,6 @@ app.post('/find-user-by-email', async (req, res) => {
 
 app.post('/start-discussion', async (req, res) => {
   const { discussionName, code, username } = req.body;
-  console.log('Received data:', { discussionName, code, username });
 
   try {
     const discussionCount = await Discussion.countDocuments();
@@ -375,12 +357,10 @@ app.post('/join-discussion', async (req, res) => {
 
 app.post('/add-user', async (req, res) => {
   const { boardId, username } = req.body;
-  console.log("attempting to add user: "+username+" for this board: "+boardId);
   try {
     const discussion = await Discussion.findById(boardId);
 
     if (!discussion) {
-      console.log("it's this one");
       return res.status(404).json({ error: 'Discussion not found with the given code.' });
     }
 
@@ -395,7 +375,6 @@ app.post('/add-user', async (req, res) => {
     const user = await User.findOne({ username });
     
     if (!user) {
-      console.log("its the user one");
       return res.status(404).json({ error: 'User not found.' });
     }
 
@@ -561,11 +540,8 @@ io.use(socketIoJwt.authorize({
 }));
 
 io.on('connection', (socket) => {
-  //console.log('Authenticated client connected');
-
   socket.on('joinDiscussion', ({ discussionID }) => {
     socket.join(discussionID);
-    //console.log(`Joined discussion ${discussionID}`);
   });
 
   socket.on('sendMessage', async ({ discussionID, sender, message, channelID }) => {
@@ -574,7 +550,7 @@ io.on('connection', (socket) => {
       const savedMessage = await newMessage.save();
       io.to(discussionID).emit('message', savedMessage);
     } catch (error) {
-      //console.error('Error saving message:', error);
+      console.error('Error saving message:', error);
     }
   });
 
