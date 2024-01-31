@@ -24,31 +24,5 @@ To test the application:
     4. Access the project at https://localhost:3000
 
 
-## Team Members & Contributions
-
-**Talia Cooper (260967144):**
-- Database design
-- Join & Create Private discussions
-- Styling
-
-**Jack Denton (260948222):**
-- Login/Registration
-- Messaging functionality (web sockets for real-time broadcasting)
-- Security & route protection
-- Styling
-- Deployment
-
-**Rex Hamilton (260950882):**
-- Manage users
-- Discussion board settings & leave board
-- Manage channels
-- Search messages
-
-**Jacob Lerner (260958030):**
-- Join & Create Group discussions
-- Search discussion boards
-- Database design
-
-
 
 
