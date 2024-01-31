@@ -2,8 +2,6 @@
 
 This project is the final submission for COMP307: Web Development at McGill University. It's a slack-clone built using React, Node.js, Express, and MongoDB, and is hosted on Heroku.
 
-Live Demo: [McGill Discussions](https://mcgill-discussions-146b67784000.herokuapp.com)
-
 ## Testing
 
 To test the application:
